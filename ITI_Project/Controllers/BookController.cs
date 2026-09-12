@@ -146,7 +146,7 @@ namespace ITI_Project.Controllers
                     await model.CoverImageFile.CopyToAsync(stream);
                 }
 
-                // هنا بس بتتحول لـ string وتتخزن في العمود
+                // Here it's converted to a string and stored in the column
                 path = $"/images/books/{fileName}";
             }
 

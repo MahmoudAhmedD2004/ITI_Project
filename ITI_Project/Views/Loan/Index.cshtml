@@ -1,0 +1,66 @@
+@model List<ITI_Project.Model.Loan>
+@{
+    ViewData["Title"] = "Active Loans";
+    Layout = "_MyLayout";
+}
+
+<section class="page" id="page-loans">
+    <div class="section-head">
+        <h1>Active Loans</h1>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning">@TempData["Warning"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">No active loans right now.</div>
+    }
+    else
+    {
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Book</th>
+                    <th>Barcode</th>
+                    <th>Member</th>
+                    <th>Borrowed On</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loan in Model)
+                {
+                    bool overdue = loan.DueDate.Date < DateTime.Now.Date;
+                    <tr class="@(overdue ? "table-danger" : "")">
+                        <td>@loan.BookCopy?.Book?.Title</td>
+                        <td>@loan.BookCopy?.Barcode</td>
+                        <td>@loan.Member?.UserName</td>
+                        <td>@loan.BorrowDate.ToString("yyyy-MM-dd")</td>
+                        <td>@loan.DueDate.ToString("yyyy-MM-dd")</td>
+                        <td>@(overdue ? "Overdue" : "On time")</td>
+                        <td>
+                            <form asp-action="Return" asp-route-id="@loan.Id" method="post"
+                                  onsubmit="return confirm('Confirm returning this book?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-oak">Return</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>

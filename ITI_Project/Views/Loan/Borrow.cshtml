@@ -1,0 +1,46 @@
+@model ITI_Project.ModelView.BorrowViewModel
+@{
+    ViewData["Title"] = "Borrow a Book";
+    Layout = "_MyLayout";
+}
+
+<section class="page" id="page-borrow">
+    <div class="section-head">
+        <h1>Borrow: @Model.BookTitle</h1>
+    </div>
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <p>Available copies: <strong>@Model.AvailableCopies</strong> of @Model.TotalCopies</p>
+
+    @if (Model.AvailableCopies == 0)
+    {
+        <div class="alert alert-warning">There are no available copies of this book right now. We could add a Reservation flow for this later.</div>
+    }
+    else
+    {
+        <form asp-action="Borrow" method="post" style="max-width:420px">
+            <input type="hidden" asp-for="BookId" />
+            <input type="hidden" asp-for="BookTitle" />
+            <input type="hidden" asp-for="BookCover" />
+
+            <div class="field">
+                <label>Select member</label>
+                <select asp-for="MemberId" class="form-select">
+                    <option value="">-- select --</option>
+                    @foreach (var m in Model.Members)
+                    {
+                        <option value="@m.Id">@m.UserName (@m.Email)</option>
+                    }
+                </select>
+                <span asp-validation-for="MemberId" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-oak mt-3">Confirm Borrow</button>
+        </form>
+    }
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,85 @@
+﻿@model HomeIndexViewModel
+<section class="hero-search">
+    <h1>What are you looking for today?</h1>
+    <p>Search across every book, author, and category in the collection.</p>
+
+    <form asp-action="Search" asp-controller="Book" method="get" class="search-form">
+        <div class="search-box">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" name="query" placeholder="Search by title, author, or ISBN...">
+            <button type="submit" class="btn btn-oak">Search</button>
+        </div>
+    </form>
+
+</section>
+
+<section class="new-arrivals">
+    <div class="section-head">
+        <h2>New arrivals</h2>
+        <a asp-action="BookView" asp-controller="Book" class="view-all">View all books &rarr;</a>
+    </div>
+
+    <div class="book-grid">
+        @foreach (var book in Model.NewArrivals)
+        {
+            <a href="@Url.Action("Details", "Book", new { id = book.Id })" class="book-card">
+                <div class="book-cover"
+                     style="@(string.IsNullOrEmpty(book.CoverImage)
+                                             ? $"background: linear-gradient(160deg, {book.CoverColorStart}, {book.CoverColorEnd});"
+                                             : $"background-image: url('{book.CoverImage}'); background-size: cover; background-position: center;")">
+                    @if (string.IsNullOrEmpty(book.CoverImage))
+                    {
+                        <span>@book.Initials</span>
+                    }
+                </div>
+                <h3>@book.Title</h3>
+                <p>@book.Author.Name</p>
+            </a>
+        }
+    </div>
+</section>
+
+<section class="most-borrowed">
+    <div class="section-head">
+        <h2>Most borrowed</h2>
+        <a asp-action="Index" asp-controller="Loan" class="view-all">View all loans &rarr;</a>
+    </div>
+
+    <div class="book-grid book-grid-4">
+        @foreach (var book in Model.MostLoans)
+        {
+            var loanCount = book.BookCopies.Sum(bc => bc.Loans.Count);
+            <a href="@Url.Action("Details", "Book", new { id = book.Id })" class="book-card">
+                <div class="book-cover"
+                     style="@(string.IsNullOrEmpty(book.CoverImage)
+                                             ? $"background: linear-gradient(160deg, {book.CoverColorStart}, {book.CoverColorEnd});"
+                                             : $"background-image: url('{book.CoverImage}'); background-size: cover; background-position: center;")">
+                    @if (string.IsNullOrEmpty(book.CoverImage))
+                    {
+                        <span>@book.Initials</span>
+                    }
+                </div>
+                <h3>@book.Title</h3>
+                <p>@book.Author.Name</p>
+                <p class="loan-count">@loanCount loans</p>
+            </a>
+        }
+    </div>
+</section>
+
+<section class="categories">
+    <div class="section-head">
+        <h2>Browse by category</h2>
+        <a asp-action="Index" asp-controller="Category" class="view-all">View all &rarr;</a>
+    </div>
+
+    <div class="category-grid">
+        @foreach (var category in Model.Categories)
+        {
+            <a href="@Url.Action("Index", "Book", new { categoryId = category.Id })" class="category-tile">
+                <h3>@category.Name</h3>
+                <p>@category.Books.Count books</p>
+            </a>
+        }
+    </div>
+</section>

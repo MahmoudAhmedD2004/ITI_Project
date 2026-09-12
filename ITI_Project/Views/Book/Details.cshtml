@@ -1,0 +1,94 @@
+﻿@model Book
+<section class="page" id="page-book-details">
+    <button type="button" class="back-link"
+            onclick="location.href='@Url.Action("BookView", "Book")'">
+        ← Back to catalogue
+    </button>
+    
+    <div class="details-wrap">
+        <div class="details-cover">
+            <div class="book-cover"
+                 style="@(string.IsNullOrEmpty(@Model.CoverImage)
+                                                             ? $"background: linear-gradient(160deg, {Model.CoverColorStart}, {Model.CoverColorEnd});"
+                                                             : $"background-image: url('{Model.CoverImage}'); background-size: cover; background-position: center;")">
+                @if (string.IsNullOrEmpty(@Model.CoverImage))
+                {
+                    <span>@Model.Initials</span>
+                }
+            </div>
+            <button class="btn btn-oak details-borrow" id="details-borrow-btn">
+                Borrow this book
+            </button>
+            <div class="details-copies" id="details-copies">
+                @Model.BookCopies.Where(bc => bc.Status == "Available").Count()
+                 of @Model.BookCopies.Count copies available
+            </div>
+        </div>
+
+        <div class="details-info">
+            <div class="details-tags">
+                <span class="tag" id="details-category">@Model.Category.Name</span>
+                <span class="tag tag-lang" id="details-language">@Model.BookLanguage</span> 
+            </div>
+            <h1 id="details-title">@Model.Title</h1>
+            <div class="details-author" id="details-author">
+                by @Model.Author?.Name
+            </div>
+            @{
+                int numOfReview = Model.Reviews.Count;
+                int totalRating = Model.Reviews.Sum(r => r.Rating);
+                double avg = totalRating / (double)numOfReview;
+                string rateStar = new string('★', (int)Math.Ceiling(avg)) + new string('☆', 5 - (int)Math.Ceiling(avg));
+            }
+
+            <div class="details-rating">
+                <span class="stars" id="details-stars">@rateStar</span>
+                <span class="rating-count" id="details-rating-count">@avg · @numOfReview reviews</span>
+            </div>
+
+            <p class="details-summary" id="details-summary">
+               @Model.Summary
+            </p>
+
+            <div class="details-meta-row">
+                <div class="meta-item">
+                    <div class="meta-lbl">ISBN</div>
+                    <div class="meta-val">@Model.ISBN</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-lbl">Published</div>
+                    <div class="meta-val">@Model.PublishedYear</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-lbl">Category</div>
+                    <div class="meta-val">@Model.Category.Name</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-lbl">Language</div>
+                    <div class="meta-val">@Model.BookLanguage</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews -->
+    <div class="section-head">
+        <h2>Member reviews</h2>
+    </div>
+    @foreach(var r in Model.Reviews) {
+        <div class="grid">
+            <div class="info-card">
+                @{
+                    string rating = 
+                        new string('★', r.Rating)+new string('☆', 5 - r.Rating);
+                    
+                }
+                <div class="stars">@rating</div>
+                <p style="margin-top: 8px">
+                    @r.Comment
+                </p>
+                <div class="meta" style="color: var(--ink-soft)">- @r.Member.UserName</div>
+            </div>
+        </div>
+    }
+</section>

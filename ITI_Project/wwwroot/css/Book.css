@@ -1,0 +1,326 @@
+﻿/* ---------- Page head ---------- */
+.page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 22px;
+}
+
+    .page-head h1 {
+        font-size: 30px;
+        font-weight: 600;
+        color: var(--navy);
+    }
+
+    .page-head p {
+        color: var(--ink-soft);
+        font-size: 14px;
+        margin-top: 4px;
+    }
+
+/* ---------- Filters bar ---------- */
+.filters-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin-bottom: 24px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+    .filter-group label {
+        font-size: 12px;
+        color: var(--ink-soft);
+        font-weight: 600;
+    }
+
+    .filter-group select {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        padding: 9px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--paper-deep);
+        color: var(--ink);
+        min-width: 150px;
+    }
+
+.sort-group {
+    margin-left: auto;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+
+.back-link {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 22px;
+    padding: 0;
+}
+
+    .back-link:hover {
+        color: var(--oak-dark);
+    }
+
+.details-wrap {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 36px;
+    margin-bottom: 34px;
+}
+
+.details-cover {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cover-lg {
+    aspect-ratio: 3 / 4;
+    font-size: 34px;
+    border-radius: var(--radius);
+}
+
+.details-borrow {
+    width: 100%;
+}
+
+.details-copies {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+}
+
+.details-tags {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.details-info h1 {
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--navy);
+    line-height: 1.2;
+}
+
+.details-author {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+}
+
+.details-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+    .details-rating .stars {
+        font-size: 15px;
+    }
+
+.rating-count {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+}
+
+.details-summary {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin-top: 18px;
+    max-width: 640px;
+}
+
+.details-meta-row {
+    display: flex;
+    gap: 30px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.meta-item .meta-lbl {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-bottom: 3px;
+}
+
+.meta-item .meta-val {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+@media (max-width: 800px) {
+    .details-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    .details-cover {
+        max-width: 220px;
+    }
+}
+
+/* ---------- Book form ---------- */
+/* Uses the existing --navy / --paper / --oak / --border variables already
+   defined in site.css. No :root, *, or body rules here so nothing gets
+   overridden — just add this file after site.css. */
+
+.container {
+    max-width: 640px;
+    margin: 34px auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 30px 34px;
+}
+
+    .container::before {
+        content: "Add a new book";
+        display: block;
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        font-size: 24px;
+        color: var(--navy);
+        margin-bottom: 24px;
+    }
+
+    .container form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .container .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .container .input-group label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--ink-soft);
+        }
+
+        .container .input-group input[type="text"],
+        .container .input-group input[type="number"],
+        .container .input-group input[type="file"],
+        .container .input-group textarea,
+        .container .input-group select {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--paper-deep);
+            color: var(--ink);
+            outline: none;
+            width: 100%;
+        }
+
+        .container .input-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+            .container .input-group input:focus,
+            .container .input-group textarea:focus,
+            .container .input-group select:focus {
+                border-color: var(--oak);
+                background: var(--card);
+                box-shadow: 0 0 0 3px rgba(162, 112, 63, 0.15);
+            }
+
+        .container .input-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23726A5B' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+            cursor: pointer;
+        }
+
+        .container .input-group input[type="file"] {
+            padding: 7px;
+            cursor: pointer;
+        }
+
+            .container .input-group input[type="file"]::file-selector-button {
+                font-family: 'Inter', sans-serif;
+                font-size: 13px;
+                font-weight: 600;
+                padding: 8px 14px;
+                margin-right: 12px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                background: var(--card);
+                color: var(--navy);
+                cursor: pointer;
+            }
+
+                .container .input-group input[type="file"]::file-selector-button:hover {
+                    background: var(--paper-deep);
+                    border-color: var(--oak);
+                }
+
+        .container .input-group:last-of-type {
+            margin-top: 6px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+
+            .container .input-group:last-of-type button[type="submit"] {
+                align-self: flex-start;
+            }
+
+    .container span.text-danger,
+    .container .field-validation-error {
+        font-size: 12px;
+        color: var(--rose);
+    }
+
+    .container button[type="submit"] {
+        align-self: flex-start;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        background: var(--oak);
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.15s ease;
+    }
+
+        .container button[type="submit"]:hover {
+            background: var(--oak-dark);
+        }
+
+    .container span.text-danger,
+    .container .field-validation-error {
+        font-size: 12px;
+        color: var(--rose);
+    }

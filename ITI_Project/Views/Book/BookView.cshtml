@@ -1,0 +1,83 @@
+﻿@model BookViewModel
+<div class="page-head">
+    <div>
+        <h1>Catalogue</h1>
+        <p>Every title in the collection, across all categories.</p>
+    </div>
+    <a asp-action="CreateBook" asp-controller="Book" class="btn btn-oak">+ Add book</a>
+</div>
+
+<form asp-action="BookView" method="get" class="filters-bar">
+    <div class="filter-group">
+        <label>Category</label>
+        <select name="Filter.Category" onchange="this.form.submit()">
+            <option value="">All categories</option>
+            @foreach (var c in Model.Categories)
+            {
+                <option value="@c.Id" selected="@(Model.Filter.Category == c.Id)">@c.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <label>Author</label>
+        <select name="Filter.Author" onchange="this.form.submit()">
+            <option value="">All authors</option>
+            @foreach (var a in Model.Authors)
+            {
+                <option value="@a.Id" selected="@(Model.Filter.Author == a.Id)">@a.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <label>Language</label>
+        <select name="Filter.BookLanguage" onchange="this.form.submit()">
+            <option value="">All languages</option>
+            <option value="English" selected="@(Model.Filter.BookLanguage == "English")">English</option>
+            <option value="Arabic" selected="@(Model.Filter.BookLanguage == "Arabic")">Arabic</option>
+            <option value="Spanish" selected="@(Model.Filter.BookLanguage == "Spanish")">Spanish</option>
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <label>Availability</label>
+        <select name="Filter.Availability" onchange="this.form.submit()">
+            <option value="">All</option>
+            <option value="Available" selected="@(Model.Filter.Availability == "Available")">Available</option>
+            <option value="Unavailable" selected="@(Model.Filter.Availability == "Unavailable")">Unavailable</option>
+        </select>
+    </div>
+
+    <div class="filter-group sort-group">
+        <label>Sort by</label>
+        <select name="Filter.SortBy" onchange="this.form.submit()">
+            <option value="title_asc" selected="@(Model.Filter.SortBy == "title_asc")">Title (A-Z)</option>
+            <option value="title_desc" selected="@(Model.Filter.SortBy == "title_desc")">Title (Z-A)</option>
+            <option value="year_desc" selected="@(Model.Filter.SortBy == "year_desc")">Newest first</option>
+            <option value="year_asc" selected="@(Model.Filter.SortBy == "year_asc")">Oldest first</option>
+        </select>
+        <a asp-action="BookView" class="btn btn-ghost">Reset</a>
+    </div>
+</form>
+
+<section class="new-arrivals">
+    <div class="book-grid">
+        @foreach (var book in Model.Books)
+        {
+            <a href="@Url.Action("Details", "Book", new { id = book.Id })" class="book-card">
+                <div class="book-cover"
+                     style="@(string.IsNullOrEmpty(book.CoverImage)
+                                                                 ? $"background: linear-gradient(160deg, {book.CoverColorStart}, {book.CoverColorEnd});"
+                                                                 : $"background-image: url('{book.CoverImage}'); background-size: cover; background-position: center;")">
+                    @if (string.IsNullOrEmpty(book.CoverImage))
+                    {
+                        <span>@book.Initials</span>
+                    }
+                </div>
+                <h3>@book.Title</h3>
+                <p>@book.Author.Name</p>
+            </a>
+        }
+    </div>
+</section>

@@ -1,0 +1,77 @@
+﻿@model BookViewModel
+<div class="container">
+	<form asp-action="Create" asp-controller="Book" method="post" enctype="multipart/form-data">
+		<div class="input-group">
+			<label asp-for="@Model.Create.Title">Title:</label>
+			<input type="text" asp-for="@Model.Create.Title" />
+			<span asp-validation-for="@Model.Create.Title" class="text-danger"></span>
+		</div>
+
+		<div class="input-group">
+			<label asp-for="@Model.Create.ISBN">ISBN:</label>
+			<input type="text" asp-for="@Model.Create.ISBN" />
+			<span asp-validation-for="@Model.Create.ISBN" class="text-danger"></span>
+		</div>
+
+		<div class="input-group">
+			<label asp-for="@Model.Create.Summary">Summary:</label>
+			<textarea asp-for="@Model.Create.Summary"></textarea>
+			<span asp-validation-for="@Model.Create.Summary" class="text-danger"></span>
+
+		</div>
+
+		<div class="input-group">
+			<label asp-for="@Model.Create.BookLanguage">Book Language:</label>
+			<select asp-for="@Model.Create.BookLanguage">
+				<option>-- select --</option>
+				<option value="Arabic">Arabic</option>
+				<option value="English">English</option>
+			</select>
+			<span asp-validation-for="@Model.Create.BookLanguage" class="text-danger"></span>
+
+		</div>
+
+		<div class="input-group">
+			<label asp-for="@Model.Create.PublishedYear">Published Year:</label>
+			<input type="number" asp-for="@Model.Create.PublishedYear" />
+			<span asp-validation-for="@Model.Create.PublishedYear" class="text-danger"></span>
+
+		</div>
+
+		<div class="input-group">
+			<label asp-for="@Model.Create.CoverImageFile">Cover Image:</label>
+			<input type="file" accept="image/*" asp-for="@Model.Create.CoverImageFile" />
+			<span asp-validation-for="@Model.Create.CoverImageFile" class="text-danger"></span>
+
+		</div>
+
+		<div class="input-group">
+			<label asp-for="@Model.Create.AuthorId">Author ID:</label>
+			<select asp-for="@Model.Create.AuthorId">
+				<option>-- select --</option>
+				@foreach (var a in Model.Authors)
+				{
+					<option value="@a.Id">@a.Name</option>
+				}
+			</select>
+			<span asp-validation-for="@Model.Create.AuthorId" class="text-danger"></span>
+
+		</div>
+
+		<div class="input-group">
+			<label asp-for="@Model.Create.CategoryId">Category ID:</label>
+			<select asp-for="@Model.Create.CategoryId">
+				<option>-- select --</option>
+				@foreach (var a in Model.Categories)
+				{
+					<option value="@a.Id">@a.Name</option>
+				}
+			</select>
+			<span asp-validation-for="@Model.Create.CategoryId" class="text-danger"></span>
+
+		</div>
+		<div class="input-group">
+			<button type="submit">Create Book</button>
+		</div>
+	</form>
+</div> 

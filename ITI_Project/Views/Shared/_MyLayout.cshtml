@@ -1,82 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Folio — Library Management</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/css/Book.css" />
-    <link rel="stylesheet" href="~/css/Member.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Folio — Library Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/css/site.css" />
+<link rel="stylesheet" href="~/css/Book.css" />
+<link rel="stylesheet" href="~/css/Member.css" />
 </head>
 <body>
 
-    <!-- ================= SIDEBAR ================= -->
-    <nav class="sidebar">
-        <div class="brand">
-            <span class="brand-mark">Folio</span>
-            <span class="brand-sub">Library</span>
-        </div>
+  <!-- ================= SIDEBAR ================= -->
+  <nav class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">Folio</span>
+      <span class="brand-sub">Library</span>
+    </div>
 
-        <div class="nav-group">
-            <div class="nav-label">Overview</div>
-            <a class="nav-item active" asp-controller="Book" asp-action="Index">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5" /><rect x="14" y="3" width="7" height="5" rx="1.5" /><rect x="14" y="12" width="7" height="9" rx="1.5" /><rect x="3" y="16" width="7" height="5" rx="1.5" /></svg>
-                Dashboard
-            </a>
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a class="nav-item active" asp-controller="Book" asp-action="Index">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
 
-            <div class="nav-label">Catalog</div>
-            <a class="nav-item" data-page="books" asp-controller="Book" asp-action="BookView">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
-                Books
-            </a>
-            <button class="nav-item" data-page="authors">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" /></svg>
-                Authors
+      <div class="nav-label">Catalog</div>
+      <a class="nav-item" data-page="books" asp-controller="Book" asp-action="BookView">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Books
+      </a>
+
+      <button class="nav-item" data-page="authors">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+        Authors
             </button>
-            <button class="nav-item" data-page="categories">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.6 12.6 12.6 20.6a2 2 0 0 1-2.8 0L2 12.8V3h9.8l8.8 8.8a2 2 0 0 1 0 2.8Z" /><circle cx="7" cy="7.5" r="1.2" fill="currentColor" stroke="none" /></svg>
-                Categories
-            </button>
+      <button class="nav-item" data-page="categories">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.6 12.6 12.6 20.6a2 2 0 0 1-2.8 0L2 12.8V3h9.8l8.8 8.8a2 2 0 0 1 0 2.8Z"/><circle cx="7" cy="7.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+        Categories
+      </button>
 
-            <div class="nav-label">People</div>
-            <button class="nav-item" data-page="members">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                Members
-            </button>
+      <div class="nav-label">People</div>
+      <button class="nav-item" data-page="members">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Members
+      </button>
 
-            <div class="nav-label">Circulation</div>
+     <div class="nav-label">Circulation</div>
             <a class="nav-item" data-page="loans" asp-controller="Loan" asp-action="Index">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 2 21 6l-4 4" /><path d="M3 12v-1a4 4 0 0 1 4-4h14" /><path d="M7 22 3 18l4-4" /><path d="M21 12v1a4 4 0 0 1-4 4H3" /></svg>
                 Loans
             </a>
-            <button class="nav-item" data-page="reservations">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21 12 16.5 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
-                Reservations
-            </button>
-            <button class="nav-item" data-page="fines">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 9.5c0-1.4 1.1-2.3 2.5-2.3s2.5.8 2.5 2c0 2.5-5 1.6-5 4.1 0 1.2 1.1 2.2 2.5 2.2s2.5-.9 2.5-2.3" /></svg>
-                Fines
-            </button>
-            <button class="nav-item" data-page="reviews">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 2 3.1 6.6 7.2.9-5.3 5 1.4 7.2L12 18.3 5.6 21.7 7 14.5 1.7 9.5l7.2-.9z" /></svg>
-                Reviews
-            </button>
-        </div>
+      <button class="nav-item" data-page="reservations">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21 12 16.5 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Reservations
+      </button>
+      <button class="nav-item" data-page="fines">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1.4 1.1-2.3 2.5-2.3s2.5.8 2.5 2c0 2.5-5 1.6-5 4.1 0 1.2 1.1 2.2 2.5 2.2s2.5-.9 2.5-2.3"/></svg>
+        Fines
+      </button>
 
-        <div class="sidebar-foot">
-            <a class="nav-item" data-page="auth" asp-action="Index" asp-controller="Member">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><path d="M10 17l5-5-5-5" /><path d="M15 12H3" /></svg>
-                Sign in / Sign up
+            <a asp-controller="Book" asp-action="Report" class="nav-item" data-page="report">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="4" y="3" width="16" height="18" rx="1.5" />
+                    <path d="M8 8h8M8 12h8M8 16h5" />
+                </svg>
+                Reports
             </a>
-        </div>
-    </nav>
 
-    <!-- ================= MAIN ================= -->
-    <main class="main">
+      <button class="nav-item" data-page="reviews">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 2 3.1 6.6 7.2.9-5.3 5 1.4 7.2L12 18.3 5.6 21.7 7 14.5 1.7 9.5l7.2-.9z"/></svg>
+        Reviews
+      </button>
+    </div>
+
+    <div class="sidebar-foot">
+            @if (User.Identity!=null && User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="Member" asp-action="Profile" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 20c0-4 3.5-7 8-7s8 3 8 7" />
+                    </svg>
+                    @User.Identity.Name
+                </a>
+            }
+            else
+            {
+                <a class="nav-item" data-page="auth" asp-action="Index" asp-controller="Member">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+                Sign in / Sign up
+                </a>
+            }
+    </div>
+  </nav>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
         @RenderBody()
-    </main>
+  </main>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>

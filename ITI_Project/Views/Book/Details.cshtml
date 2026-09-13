@@ -17,10 +17,19 @@
                 }
             </div>
  @if (User.IsInRole("Member"))
-            {
-            <a class="btn btn-oak details-borrow" id="details-borrow-btn" asp-action="Index" asp-controller="Loan">
-                Borrow this book
-            </a>
+           @if (hasAvailableCopy)
+    {
+        <a class="btn btn-oak details-borrow" id="details-borrow-btn"
+           href="@Url.Action("Borrow", "Loan", new { bookId = Model.Id })">
+            Borrow this book
+        </a>
+    }
+    else
+    {
+        <button class="btn btn-oak details-borrow" id="details-borrow-btn" disabled>
+            No copies available
+        </button>
+    }
 }
             @if (User.IsInRole("Librarian"))
             {

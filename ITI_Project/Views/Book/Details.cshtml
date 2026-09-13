@@ -16,9 +16,7 @@
                     <span>@Model.Initials</span>
                 }
             </div>
-            <button class="btn btn-oak details-borrow" id="details-borrow-btn">
-                Borrow this book
-            </button>
+            
             @if (User.IsInRole("Librarian"))
             {
                 <a class="btn btn-oak details-borrow btn-edit" asp-action="Edit"

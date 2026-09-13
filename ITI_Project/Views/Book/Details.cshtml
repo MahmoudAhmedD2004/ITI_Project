@@ -19,6 +19,17 @@
             <button class="btn btn-oak details-borrow" id="details-borrow-btn">
                 Borrow this book
             </button>
+            @if (User.IsInRole("Librarian"))
+            {
+                <a class="btn btn-oak details-borrow btn-edit" asp-action="Edit"
+                   asp-controller="Book" asp-route-Id="@Model.Id">
+                    Edit
+                </a>
+                <a class="btn btn-oak details-borrow btn-danger" asp-action="Delete" 
+                asp-controller="Book" asp-route-Id="@Model.Id">
+                    Delete
+                </a>
+            }
             <div class="details-copies" id="details-copies">
                 @Model.BookCopies.Where(bc => bc.Status == "Available").Count()
                  of @Model.BookCopies.Count copies available

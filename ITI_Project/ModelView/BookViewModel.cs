@@ -9,5 +9,6 @@ namespace ITI_Project.ModelView
         public List<Category> Categories { get; set; } = new();
         public List<Author> Authors { get; set; } = new();
         public List<Book> Books { get; set; } = new();
+        public Book? Book { get; set; }
     }
 }

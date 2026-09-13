@@ -4,7 +4,10 @@
         <h1>Catalogue</h1>
         <p>Every title in the collection, across all categories.</p>
     </div>
-    <a asp-action="CreateBook" asp-controller="Book" class="btn btn-oak">+ Add book</a>
+    @if (@User.IsInRole("Librarian"))
+    {
+        <a asp-action="CreateBook" asp-controller="Book" class="btn btn-oak">+ Add book</a>
+    }
 </div>
 
 <form asp-action="BookView" method="get" class="filters-bar">

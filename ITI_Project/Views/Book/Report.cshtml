@@ -1,0 +1,111 @@
+﻿@model ReportViewModel
+<div class="report-container">
+	<header class="report-header">
+		<h1>Library Reports</h1>
+	</header>
+	<br />
+	<div class=" Overdue-book">
+		<h2>Overdue Book</h2>
+		<table>
+			<thead>
+				<tr>
+				<th>Member</th>
+				<th>Book</th>
+				<th>Due Date</th>
+				<th>Days Overdue</th>
+				</tr>
+			</thead>
+			<tbody>
+
+				@foreach(var l in Model.Loans)
+				{
+					<tr>
+						<td>@l.Member?.UserName</td>
+						<td>@l.BookCopy?.Book?.ISBN</td>
+						<td>@l.DueDate</td>
+						@{
+							var overdue = l.ReturnDate - l.DueDate;
+						}
+						<td>@overdue</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+	<br />
+	<br />
+	<br />
+	<div class="most-borrowed-title">
+		<h2>Most Borrowed Title</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Number of Loans</th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+				   var orderedList =	Model.MostBorrowed.OrderByDescending(l => l.Value);
+				}
+				@foreach (var item in orderedList)
+				{
+					<tr>
+						<td>@item.Key</td>
+						<td>@item.Value</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+	<br />
+	<br />
+	<br />
+		<h2 style="display:Block"> Categories Nobody Reads</h2>
+		<br />
+		<br />
+	<div class="category-grid">
+		@foreach (var category in Model.Categories)
+		{
+			<a href="@Url.Action("Index", "Book", new { categoryId = category.Id })" class="category-tile">
+				<h3>@category.Name</h3>
+				<p>@category.Books.Count books</p>
+			</a>
+		}
+	</div>
+	<br />
+	<br />
+	<br />
+	<section class="report-section loans-chart">
+		<h3>Loans per Month</h3>
+		<div style="position:relative; height:300px;">
+			<canvas id="loansChart"></canvas>
+		</div>
+	</section>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+	const labels = @Html.Raw(Json.Serialize(ViewBag.ChartLabels));
+	const values = @Html.Raw(Json.Serialize(ViewBag.ChartValues));
+
+	new Chart(document.getElementById('loansChart'), {
+		type: 'bar',
+		data: {
+			labels: labels,
+			datasets: [{
+				label: 'Loans',
+				data: values,
+				backgroundColor: '#b8a888',
+				maxBarThickness: 60
+			}]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false,
+			plugins: { legend: { display: false } },
+			scales: {
+				y: { beginAtZero: true, ticks: { precision: 0 } }
+			}
+		}
+	});
+</script>

@@ -15,3 +15,4 @@ function showAuthForm(which) {
     document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.auth-tab')[which === 'login' ? 0 : 1].classList.add('active');
 }
+

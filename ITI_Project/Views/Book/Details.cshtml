@@ -16,14 +16,15 @@
                     <span>@Model.Initials</span>
                 }
             </div>
- @if (User.IsInRole("Member"))
-     <a class="btn btn-oak details-borrow" id="details-borrow-btn" asp-action="Borrow" asp-controller="Loan">
-    Borrow this book
-        </a>
-        
-}
-            @if (User.IsInRole("Librarian"))
-            {
+                 @if (User.IsInRole("Member"))
+                {
+                    <a class="btn btn-oak details-borrow" id="details-borrow-btn" asp-action="Borrow"
+                    asp-controller="Loan">
+                    Borrow this book
+                 </a>
+                }
+                @if (User.IsInRole("Librarian"))
+                {
                 <a class="btn btn-oak details-borrow btn-edit" asp-action="Edit"
                    asp-controller="Book" asp-route-Id="@Model.Id">
                     Edit

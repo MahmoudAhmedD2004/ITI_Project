@@ -1,6 +1,7 @@
 ﻿using ITI_Project.Data;
 using ITI_Project.Model;
 using ITI_Project.ModelView;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -63,9 +64,9 @@ namespace ITI_Project.Controllers
                      (string.IsNullOrEmpty(model.Filter.BookLanguage) ||
                          b.BookLanguage == model.Filter.BookLanguage) &&
 
-                     (string.IsNullOrEmpty(model.Filter.Availability) ||
-                         b.BookCopies.Any(bc =>
-                             bc.Status == model.Filter.Availability))
+                     (model.Filter.Availability == null ||
+    b.BookCopies.Any(bc =>
+        bc.Status == model.Filter.Availability))
                  )
                  .ToListAsync();
             switch (model.Filter.SortBy)
@@ -109,6 +110,7 @@ namespace ITI_Project.Controllers
             return View(book);
         }
         [HttpGet]
+        [Authorize(Roles = "Librarian")]
         public async Task<IActionResult> CreateBook(BookViewModel model)
         {
             model.Authors = await context.Authors.ToListAsync();
@@ -167,6 +169,98 @@ namespace ITI_Project.Controllers
                 return RedirectToAction("Index");
             
             
+        }
+        public async Task<IActionResult> Report(ReportViewModel model)
+        {
+            model.Loans = await context.Loans.Include(l => l.Member)
+                .Include(l => l.BookCopy).ThenInclude(bc => bc.Book)
+                .Where(l => l.Status == LoanStatus.Returned
+                         && l.ReturnDate != null
+                         && l.DueDate != null
+                         && l.ReturnDate > l.DueDate.Value.AddDays(14))
+                .ToListAsync();
+
+            var loans = await context.Loans.GroupBy(l => l.BookCopyId)
+                .Select(g => new { g.Key, Count = g.Count() })
+                .Take(10).ToListAsync();
+
+            foreach (var l in loans)
+            {
+                var book = await context.BookCopies.Include(bc => bc.Book)
+                    .FirstOrDefaultAsync(bc => bc.Id == l.Key);
+                if (book?.Book != null)
+                    model.MostBorrowed[book.Book.Title] = l.Count;
+            }
+
+            var category = await context.Categories.Include(c => c.Books).ThenInclude(b => b.BookCopies)
+                .ThenInclude(bc => bc.Loans).ToListAsync();
+            model.Categories = category
+                .Where(c => c.Books.All(b => b.BookCopies.All(bc => !bc.Loans.Any())))
+                .ToList();
+
+            var loansPerMonth = await context.Loans
+                .Where(l => l.BorrowDate != null)
+                .GroupBy(l => new { l.BorrowDate!.Value.Year, l.BorrowDate!.Value.Month })
+                .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+                .OrderBy(g => g.Year).ThenBy(g => g.Month)
+                .ToListAsync();
+
+            var labels = loansPerMonth
+                .Select(x => new DateTime(x.Year, x.Month, 1).ToString("MMM yyyy"))
+                .ToList();
+
+            var values = loansPerMonth.Select(x => x.Count).ToList();
+
+            ViewBag.ChartLabels = labels;
+            ViewBag.ChartValues = values;
+
+            return View(model);
+        }
+        [HttpGet]
+        [Authorize(Roles = "Librarian,Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var book = await context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Category)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (book == null) return RedirectToAction("Index", "Book");
+
+            return View(book);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Librarian,Admin")]
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var book = await context.Books.FindAsync(id);
+            if (book is not null)
+            {
+                context.Books.Remove(book);
+                await context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index", "Book");
+        }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var book = await context.Books.FindAsync(id);
+
+            BookViewModel model = new();
+            model.Book = book;
+            model.Authors = await context.Authors.ToListAsync();
+            model.Categories = await context.Categories.ToListAsync();
+
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditBook(Book book)
+        {
+            context.Books.Update(book);
+            await context.SaveChangesAsync();
+            return RedirectToAction("Index", "Book");
         }
     }
 }

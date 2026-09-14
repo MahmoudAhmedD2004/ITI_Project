@@ -1,0 +1,43 @@
+﻿@model List<ITI_Project.Model.Loan>
+@{
+    ViewData["Title"] = "Pending Borrow Requests";
+    Layout = "_MyLayout";
+}
+
+<h2>Pending Borrow Requests</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Member</th>
+            <th>Book</th>
+            <th>Requested On</th>
+            <th style="width:340px">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var loan in Model)
+        {
+            <tr>
+                <td>@loan.Member?.UserName</td>
+                <td>@loan.BookCopy?.Book?.Title</td>
+                <td>@loan.RequestDate.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <form asp-action="Approve" asp-controller="Loan" method="post" class="d-flex gap-1">
+                            <input type="hidden" name="loanId" value="@loan.Id" />
+                            <input type="number" name="days" value="14" min="1" class="form-control form-control-sm" style="width:70px" />
+                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                        </form>
+                        <form asp-action="Reject" asp-controller="Loan" method="post" class="d-flex gap-1"
+                              onsubmit="return confirm('Reject this request?');">
+                            <input type="hidden" name="loanId" value="@loan.Id" />
+                            <input type="text" name="reason" placeholder="Reason" class="form-control form-control-sm" required />
+                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

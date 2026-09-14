@@ -1,0 +1,41 @@
+﻿@model Member
+
+<div class="page-head">
+    <div>
+        <h1>My Profile</h1>
+        <p>Account details and membership info</p>
+    </div>
+</div>
+
+<div class="panel" style="padding:24px;">
+    <div class="grid" style="grid-template-columns: repeat(2, 1fr); gap:20px;">
+        <div>
+            <div class="meta-lbl">Username</div>
+            <div class="meta-val">@Model.UserName</div>
+        </div>
+        <div>
+            <div class="meta-lbl">Email</div>
+            <div class="meta-val">@Model.Email</div>
+        </div>
+        <div>
+            <div class="meta-lbl">Phone</div>
+            <div class="meta-val">@Model.PhoneNumber</div>
+        </div>
+        <div>
+            <div class="meta-lbl">Role</div>
+            <div class="meta-val">@Model.Role</div>
+        </div>
+        <div>
+            <div class="meta-lbl">Membership Start</div>
+            <div class="meta-val">@Model.MembershipStartDate.ToString("dd MMM yyyy")</div>
+        </div>
+        <div>
+            <div class="meta-lbl">Membership Expiry</div>
+            <div class="meta-val">@Model.MembershipExpiryDate.ToString("dd MMM yyyy")</div>
+        </div>
+    </div>
+
+    <form asp-controller="Member" asp-action="Logout" method="post" style="margin-top:28px;">
+        <button type="submit" class="btn btn-ghost">Log out</button>
+    </form>
+</div>

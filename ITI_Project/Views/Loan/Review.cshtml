@@ -1,0 +1,29 @@
+﻿@model ReviewViewModel
+<div class="container-review">
+    <h2>Add Review</h2>
+    @if (Model.Loan != null)
+    {
+        <p>Book: @Model.Loan.BookCopy.Book.Title</p>
+    }
+    <form asp-action="AddReview" asp-controller="Loan" method="post">
+        <input type="hidden" asp-for="@Model.LoanId" />
+        <div class="review-rating">
+            <label asp-for="@Model.Rating">Rating</label>
+            <select asp-for="@Model.Rating">
+                <option value="">-- Select --</option>
+                @for (int i = 1; i <= 5; i++)
+                {
+
+                   string stars = new string('★', i) + new string('☆', 5 - i);
+
+                    <option value="@i">@stars</option>
+                }
+            </select>
+        </div>
+        <div class="review-comment">
+            <label asp-for="@Model.Comment">Comment</label>
+            <textarea asp-for="@Model.Comment" rows="5" placeholder="Write your review here..."></textarea>
+        </div>
+        <button type="submit" class="btn-submit-review">Submit Review</button>
+    </form>
+</div>

@@ -1,0 +1,63 @@
+﻿@model BookViewModel
+<div class="container">
+    <form asp-action="EditBook" asp-controller="Book" method="post" enctype="multipart/form-data"
+          onsubmit="return confirm('Are you sure to edit this Book?')">
+
+        <input type="hidden" asp-for="Book.Id" />
+
+        <div class="input-group">
+            <label asp-for="Book.Title">Title:</label>
+            <input type="text" asp-for="Book.Title" />
+        </div>
+
+        <div class="input-group">
+            <label asp-for="Book.ISBN">ISBN:</label>
+            <input type="text" asp-for="Book.ISBN" />
+        </div>
+
+        <div class="input-group">
+            <label asp-for="Book.Summary">Summary:</label>
+            <textarea asp-for="Book.Summary"></textarea>
+        </div>
+
+        <div class="input-group">
+            <label asp-for="Book.BookLanguage">Book Language:</label>
+            <select asp-for="Book.BookLanguage">
+                <option value="">-- select --</option>
+                <option value="Arabic">Arabic</option>
+                <option value="English">English</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label asp-for="Book.PublishedYear">Published Year:</label>
+            <input type="number" asp-for="Book.PublishedYear" />
+        </div>
+
+        <div class="input-group">
+            <label asp-for="Book.AuthorId">Author ID:</label>
+            <select asp-for="Book.AuthorId">
+                <option value="">-- select --</option>
+                @foreach (var a in Model.Authors)
+                {
+                    <option value="@a.Id">@a.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label asp-for="Book.CategoryId">Category ID:</label>
+            <select asp-for="Book.CategoryId">
+                <option value="">-- select --</option>
+                @foreach (var a in Model.Categories)
+                {
+                    <option value="@a.Id">@a.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="input-group">
+            <button type="submit">Edit Book</button>
+        </div>
+    </form>
+</div>

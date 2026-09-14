@@ -143,3 +143,81 @@
         text-decoration: none;
         cursor: pointer;
     }
+.container-review {
+    max-width: 480px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 32px 36px;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    font-family: 'Georgia', serif;
+}
+
+    .container-review h2 {
+        color: #3a2e26;
+        font-size: 26px;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #c9a86a;
+        padding-bottom: 10px;
+    }
+
+    .container-review label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #6b5b4a;
+        margin-bottom: 6px;
+        font-family: Arial, sans-serif;
+    }
+
+.review-rating,
+.review-comment {
+    margin-bottom: 20px;
+}
+
+.container-review select,
+.container-review textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d8cfc0;
+    border-radius: 6px;
+    background-color: #faf6f0;
+    font-size: 15px;
+    font-family: Arial, sans-serif;
+    color: #3a2e26;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.container-review select {
+    cursor: pointer;
+}
+
+.container-review textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+    .container-review select:focus,
+    .container-review textarea:focus {
+        outline: none;
+        border-color: #c9a86a;
+        box-shadow: 0 0 0 3px rgba(201, 168, 106, 0.25);
+    }
+
+.btn-submit-review {
+    background-color: #3a2e26;
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .btn-submit-review:hover {
+        background-color: #c9a86a;
+        color: #2b2118;
+    }

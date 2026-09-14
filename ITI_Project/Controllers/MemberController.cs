@@ -1,8 +1,12 @@
 ﻿using ITI_Project.Data;
 using ITI_Project.Model;
 using ITI_Project.ModelView;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ITI_Project.Controllers
 {
@@ -15,18 +19,47 @@ namespace ITI_Project.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
-            var members = await context.Members.ToListAsync();
-            if (members.Any(m => m.UserName == username))
+            var member = await context.Members
+                .FirstOrDefaultAsync(m => m.UserName == username);
+            
+
+            if (member != null && member.PasswordHash == password)
             {
-                if (members.FirstOrDefault(m => m.UserName == username)?.PasswordHash == password)
+                var claims = new List<Claim>
                 {
+                    new Claim(ClaimTypes.Name, member.UserName),
+                    new Claim(ClaimTypes.Role, member.Role.ToString())
+                };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var principal = new ClaimsPrincipal(identity);
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
                     return RedirectToAction("Index", "Book");
                 }
-               
 
-            }
-            return Redirect("Index");
+            ModelState.AddModelError("", "Invalid username or password");
+            return View("Index");
         }
+        [Authorize]
+        public async Task<IActionResult> Profile()
+        {
+            var member = await context.Members.Where(m=>m.UserName==User.Identity.Name).FirstOrDefaultAsync();
+
+            if (member == null)
+                return RedirectToAction("Index");
+
+            return View(member);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Book");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Signup(string username,string email,string phone,string password)
         {

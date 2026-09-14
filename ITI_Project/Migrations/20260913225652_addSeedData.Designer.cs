@@ -4,6 +4,7 @@ using ITI_Project.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ITI_Project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260913225652_addSeedData")]
+    partial class addSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -429,8 +432,9 @@ namespace ITI_Project.Migrations
                     b.Property<int>("BookId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -447,322 +451,322 @@ namespace ITI_Project.Migrations
                             Id = 1,
                             Barcode = "BC-0001",
                             BookId = 1,
-                            Status = 2
+                            Status = "Borrowed"
                         },
                         new
                         {
                             Id = 2,
                             Barcode = "BC-0002",
                             BookId = 1,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 3,
                             Barcode = "BC-0003",
                             BookId = 2,
-                            Status = 2
+                            Status = "Borrowed"
                         },
                         new
                         {
                             Id = 4,
                             Barcode = "BC-0004",
                             BookId = 2,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 5,
                             Barcode = "BC-0005",
                             BookId = 3,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 6,
                             Barcode = "BC-0006",
                             BookId = 3,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 7,
                             Barcode = "BC-0007",
                             BookId = 4,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 8,
                             Barcode = "BC-0008",
                             BookId = 4,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 9,
                             Barcode = "BC-0009",
                             BookId = 5,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 10,
                             Barcode = "BC-0010",
                             BookId = 5,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 11,
                             Barcode = "BC-0011",
                             BookId = 6,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 12,
                             Barcode = "BC-0012",
                             BookId = 6,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 13,
                             Barcode = "BC-0013",
                             BookId = 7,
-                            Status = 2
+                            Status = "Borrowed"
                         },
                         new
                         {
                             Id = 14,
                             Barcode = "BC-0014",
                             BookId = 7,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 15,
                             Barcode = "BC-0015",
                             BookId = 8,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 16,
                             Barcode = "BC-0016",
                             BookId = 8,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 17,
                             Barcode = "BC-0017",
                             BookId = 9,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 18,
                             Barcode = "BC-0018",
                             BookId = 9,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 19,
                             Barcode = "BC-0019",
                             BookId = 10,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 20,
                             Barcode = "BC-0020",
                             BookId = 10,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 21,
                             Barcode = "BC-0021",
                             BookId = 11,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 22,
                             Barcode = "BC-0022",
                             BookId = 11,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 23,
                             Barcode = "BC-0023",
                             BookId = 12,
-                            Status = 2
+                            Status = "Borrowed"
                         },
                         new
                         {
                             Id = 24,
                             Barcode = "BC-0024",
                             BookId = 12,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 25,
                             Barcode = "BC-0025",
                             BookId = 13,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 26,
                             Barcode = "BC-0026",
                             BookId = 13,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 27,
                             Barcode = "BC-0027",
                             BookId = 14,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 28,
                             Barcode = "BC-0028",
                             BookId = 14,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 29,
                             Barcode = "BC-0029",
                             BookId = 15,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 30,
                             Barcode = "BC-0030",
                             BookId = 15,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 31,
                             Barcode = "BC-0031",
                             BookId = 16,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 32,
                             Barcode = "BC-0032",
                             BookId = 16,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 33,
                             Barcode = "BC-0033",
                             BookId = 17,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 34,
                             Barcode = "BC-0034",
                             BookId = 17,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 35,
                             Barcode = "BC-0035",
                             BookId = 18,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 36,
                             Barcode = "BC-0036",
                             BookId = 18,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 37,
                             Barcode = "BC-0037",
                             BookId = 19,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 38,
                             Barcode = "BC-0038",
                             BookId = 19,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 39,
                             Barcode = "BC-0039",
                             BookId = 20,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 40,
                             Barcode = "BC-0040",
                             BookId = 20,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 41,
                             Barcode = "BC-0041",
                             BookId = 21,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 42,
                             Barcode = "BC-0042",
                             BookId = 21,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 43,
                             Barcode = "BC-0043",
                             BookId = 22,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 44,
                             Barcode = "BC-0044",
                             BookId = 22,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 45,
                             Barcode = "BC-0045",
                             BookId = 23,
-                            Status = 0
+                            Status = "Available"
                         },
                         new
                         {
                             Id = 46,
                             Barcode = "BC-0046",
                             BookId = 23,
-                            Status = 0
+                            Status = "Available"
                         });
                 });
 
@@ -878,27 +882,17 @@ namespace ITI_Project.Migrations
                     b.Property<int>("BookCopyId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("BorrowDate")
+                    b.Property<DateTime>("BorrowDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DueDate")
+                    b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RejectionReason")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -915,9 +909,7 @@ namespace ITI_Project.Migrations
                             BookCopyId = 1,
                             BorrowDate = new DateTime(2026, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DueDate = new DateTime(2026, 9, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MemberId = 4,
-                            RequestDate = new DateTime(2026, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 1
+                            MemberId = 4
                         },
                         new
                         {
@@ -925,9 +917,7 @@ namespace ITI_Project.Migrations
                             BookCopyId = 3,
                             BorrowDate = new DateTime(2026, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DueDate = new DateTime(2026, 9, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MemberId = 5,
-                            RequestDate = new DateTime(2026, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 1
+                            MemberId = 5
                         },
                         new
                         {
@@ -935,9 +925,7 @@ namespace ITI_Project.Migrations
                             BookCopyId = 13,
                             BorrowDate = new DateTime(2026, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DueDate = new DateTime(2026, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MemberId = 6,
-                            RequestDate = new DateTime(2026, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 1
+                            MemberId = 6
                         },
                         new
                         {
@@ -945,9 +933,7 @@ namespace ITI_Project.Migrations
                             BookCopyId = 23,
                             BorrowDate = new DateTime(2026, 8, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DueDate = new DateTime(2026, 9, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MemberId = 7,
-                            RequestDate = new DateTime(2026, 8, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Status = 1
+                            MemberId = 7
                         });
                 });
 

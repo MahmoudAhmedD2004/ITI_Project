@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <UseAppHost>false</UseAppHost>
   </PropertyGroup>
 
   
@@ -25,5 +27,9 @@
   <ItemGroup>
     <Folder Include="wwwroot\images\author\" />
   </ItemGroup>
+
+  <Target Name="SafeCopyAppHost" BeforeTargets="_CreateAppHost">
+    <Delete Files="$(OutDir)$(TargetName).exe" ContinueOnError="true" />
+  </Target>
 
 </Project>

@@ -48,9 +48,10 @@ namespace ITI_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> BookView(BookViewModel model)
         {
+            const int pageSize = 10;
 
             model.Categories = await context.Categories.ToListAsync();
-            model.Books = await context.Books
+            var query = context.Books
                  .Include(b => b.Author)
                  .Include(b => b.Category)
                  .Include(b => b.BookCopies)
@@ -65,36 +66,40 @@ namespace ITI_Project.Controllers
                          b.BookLanguage == model.Filter.BookLanguage) &&
 
                      (model.Filter.Availability == null ||
-    b.BookCopies.Any(bc =>
-        bc.Status == model.Filter.Availability))
-                 )
-                 .ToListAsync();
+                         b.BookCopies.Any(bc =>
+                             bc.Status == model.Filter.Availability))
+                 );
+
             switch (model.Filter.SortBy)
             {
                 case "title_asc":
-                    model.Books = model.Books
-                        .OrderBy(b => b.Title)
-                        .ToList();
+                    query = query.OrderBy(b => b.Title);
                     break;
-
                 case "title_desc":
-                    model.Books = model.Books
-                        .OrderByDescending(b => b.Title)
-                        .ToList();
+                    query = query.OrderByDescending(b => b.Title);
                     break;
-
                 case "year_asc":
-                    model.Books = model.Books
-                        .OrderBy(b => b.PublishedYear)
-                        .ToList();
+                    query = query.OrderBy(b => b.PublishedYear);
                     break;
-
                 case "year_desc":
-                    model.Books = model.Books
-                        .OrderByDescending(b => b.PublishedYear)
-                        .ToList();
+                    query = query.OrderByDescending(b => b.PublishedYear);
+                    break;
+                default:
+                    query = query.OrderBy(b => b.Title);
                     break;
             }
+
+            var totalCount = await query.CountAsync();
+            model.Filter.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            if (model.Filter.Page < 1) model.Filter.Page = 1;
+            if (model.Filter.TotalPages > 0 && model.Filter.Page > model.Filter.TotalPages)
+                model.Filter.Page = model.Filter.TotalPages;
+
+            model.Books = await query
+                .Skip((model.Filter.Page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             model.Authors = await context.Authors.ToListAsync();
             return View(model);

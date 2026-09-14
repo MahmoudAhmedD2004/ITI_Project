@@ -145,11 +145,20 @@ namespace ITI_Project.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-        
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var author = await context.Authors.FindAsync(id);
+            if (author == null) return RedirectToAction(nameof(Index));
+            return View(author);
+        }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete (int id)
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var author = await context.Authors.FindAsync(id);
             if (author != null)

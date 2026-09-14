@@ -84,3 +84,21 @@
         }
     </div>
 </section>
+@if (Model.Filter.TotalPages > 1)
+{
+    <nav style="margin-top: 24px; display:flex; gap:6px; justify-content:center; flex-wrap: wrap;">
+        @for (int p = 1; p <= Model.Filter.TotalPages; p++)
+        {
+            <a asp-action="BookView"
+               asp-route-Filter.Category="@Model.Filter.Category"
+               asp-route-Filter.Author="@Model.Filter.Author"
+               asp-route-Filter.BookLanguage="@Model.Filter.BookLanguage"
+               asp-route-Filter.Availability="@Model.Filter.Availability"
+               asp-route-Filter.SortBy="@Model.Filter.SortBy"
+               asp-route-Filter.Page="@p"
+               class="btn btn-sm @(p == Model.Filter.Page ? "btn-oak" : "btn-ghost")">
+                @p
+            </a>
+        }
+    </nav>
+}

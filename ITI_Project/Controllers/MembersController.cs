@@ -9,10 +9,13 @@ namespace ITI_Project.Controllers
     public class MembersController (AppDbContext context) : Controller
     {
         [HttpGet]
-        [Authorize(Roles ="Admin")]
-        public async Task<IActionResult> Index()
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var members = await context.Members
+            const int pageSize = 10;
+            if (page < 1) page = 1;
+
+            var query = context.Members
                 .Select(m => new MemberViewModel
                 {
                     Id = m.Id,
@@ -23,10 +26,19 @@ namespace ITI_Project.Controllers
                     IsBlocked = m.IsBlocked,
                     ActiveLoansCount = context.Loans.Count(l => l.MemberId == m.Id && l.ReturnDate == null),
                     TotalUnpaidFines = context.Fines.Where(f => f.Loan.MemberId == m.Id && !f.IsPaid).Sum(f => f.Amount)
+                });
 
-                })
-                .ToListAsync()
-                ;
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            if (totalPages > 0 && page > totalPages) page = totalPages;
+
+            var members = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
 
             return View(members);
         }

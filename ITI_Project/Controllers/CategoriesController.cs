@@ -42,9 +42,22 @@ namespace ITI_Project.Controllers
             return RedirectToAction (nameof(Index));
         }
 
-        [HttpPost]
+        [HttpGet]
         [Authorize(Roles = "Librarian")]
         public async Task<IActionResult> Delete(int id)
+        {
+            var category = await context.Categories
+                .Include(c => c.Books)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (category == null) return RedirectToAction(nameof(Index));
+            return View(category);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Librarian")]
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var category = await context.Categories.FindAsync(id);
             if (category != null)

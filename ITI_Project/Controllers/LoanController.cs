@@ -21,6 +21,35 @@ namespace ITI_Project.Controllers
 
         // ---------- Member actions ----------
 
+        private async Task PromoteNextReservationAsync(BookCopy copy)
+        {
+            var reservation = await context.Reservations
+                .Include(r => r.Member)
+                .Where(r => r.BookId == copy.BookId
+                    && r.Status == "Pending"
+                    && !r.Member!.IsBlocked
+                    && r.Member.MembershipExpiryDate >= DateTime.Today)
+                .OrderBy(r => r.ReservationDate)
+                .FirstOrDefaultAsync();
+
+            if (reservation == null)
+            {
+                copy.Status = BookCopyStatus.Available;
+                return;
+            }
+
+            copy.Status = BookCopyStatus.Reserved;
+            reservation.Status = "Fulfilled";
+
+            context.Loans.Add(new Loan
+            {
+                BookCopyId = copy.Id,
+                MemberId = reservation.MemberId,
+                RequestDate = DateTime.Now,
+                Status = LoanStatus.Requested
+            });
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> RequestBorrow(int bookCopyId)

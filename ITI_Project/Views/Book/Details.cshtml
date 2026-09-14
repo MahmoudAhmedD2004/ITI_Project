@@ -16,14 +16,26 @@
                     <span>@Model.Initials</span>
                 }
             </div>
-            @if (User.Identity!.IsAuthenticated && !User.IsInRole("Librarian") && !User.IsInRole("Admin"))
+            @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Member"))
             {
-                <form asp-action="RequestBorrow" asp-controller="Loan" method="post">
-                    <input type="hidden" name="bookCopyId" value="@(Model.BookCopies.FirstOrDefault(bc => bc.Status == ITI_Project.Model.BookCopyStatus.Available)?.Id)" />
-                    <button type="submit" class="btn btn-oak" @(Model.BookCopies.Any(bc => bc.Status == ITI_Project.Model.BookCopyStatus.Available) ? "" : "disabled")>
-                        Request to Borrow
-                    </button>
-                </form>
+                @if (Model.BookCopies.Any(bc => bc.Status == ITI_Project.Model.BookCopyStatus.Available))
+                {
+                    <form asp-action="RequestBorrow" asp-controller="Loan" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden"
+                               name="bookCopyId"
+                               value="@(Model.BookCopies.First(bc => bc.Status == ITI_Project.Model.BookCopyStatus.Available).Id)" />
+                        <button type="submit" class="btn btn-oak">Request to Borrow</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="Create" asp-controller="Reservations" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="bookId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-oak">Reserve this Book</button>
+                    </form>
+                }
             }
             @if (User.IsInRole("Librarian"))
             {

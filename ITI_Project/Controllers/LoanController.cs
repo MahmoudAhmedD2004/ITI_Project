@@ -10,6 +10,7 @@ namespace ITI_Project.Controllers
     public class LoanController(AppDbContext context) : Controller
     {
         private const decimal FinePerDay = 5.0m;
+        private const decimal BlockThreshold = 100m;
 
         private async Task<Member?> GetCurrentMemberAsync()
         {
@@ -24,6 +25,12 @@ namespace ITI_Project.Controllers
         {
             var member = await GetCurrentMemberAsync();
             if (member == null) return RedirectToAction("Index", "Member");
+
+            if (member.IsBlocked)
+            {
+                TempData["Error"] = "Your account is blocked due to unpaid fines over 100 EGP. Please settle your fines to continue borrowing.";
+                return RedirectToAction("MyLoans");
+            }
 
             var copy = await context.BookCopies.FindAsync(bookCopyId);
             if (copy == null || copy.Status != BookCopyStatus.Available)
@@ -48,7 +55,6 @@ namespace ITI_Project.Controllers
             TempData["Success"] = "Your borrow request has been sent.";
             return RedirectToAction("MyLoans");
         }
-
         public async Task<IActionResult> MyLoans()
         {
             var member = await GetCurrentMemberAsync();
@@ -158,13 +164,13 @@ namespace ITI_Project.Controllers
 
             return View(loans);
         }
-
         [Authorize(Roles = "Librarian,Admin")]
         [HttpPost]
         public async Task<IActionResult> ConfirmReturn(int loanId)
         {
             var loan = await context.Loans
                 .Include(l => l.BookCopy)
+                .Include(l => l.Member)
                 .FirstOrDefaultAsync(l => l.Id == loanId);
 
             if (loan == null || loan.Status != LoanStatus.ReturnRequested)
@@ -188,6 +194,17 @@ namespace ITI_Project.Controllers
                     IsPaid = false
                 };
                 await context.Fines.AddAsync(fine);
+                await context.SaveChangesAsync();
+
+                var unpaidTotal = await context.Fines
+                    .Include(f => f.Loan)
+                    .Where(f => !f.IsPaid && f.Loan!.MemberId == loan.MemberId)
+                    .SumAsync(f => (decimal?)f.Amount) ?? 0m;
+
+                if (unpaidTotal > BlockThreshold && loan.Member != null)
+                {
+                    loan.Member.IsBlocked = true;
+                }
             }
 
             await context.SaveChangesAsync();
@@ -240,6 +257,53 @@ namespace ITI_Project.Controllers
 
             TempData["Success"] = "Return request cancelled — the loan is active again.";
             return RedirectToAction("MyLoans");
+        }
+
+        [Authorize(Roles = "Librarian,Admin")]
+        public async Task<IActionResult> AllFines()
+        {
+            var fines = await context.Fines
+                .Include(f => f.Loan).ThenInclude(l => l!.Member)
+                .Include(f => f.Loan).ThenInclude(l => l!.BookCopy).ThenInclude(bc => bc!.Book)
+                .OrderByDescending(f => f.CreatedDate)
+                .ToListAsync();
+
+            return View(fines);
+        }
+
+        [Authorize(Roles = "Librarian,Admin")]
+        [HttpPost]
+        public async Task<IActionResult> MarkFinePaid(int fineId)
+        {
+            var fine = await context.Fines
+                .Include(f => f.Loan).ThenInclude(l => l!.Member)
+                .FirstOrDefaultAsync(f => f.Id == fineId);
+
+            if (fine == null)
+            {
+                TempData["Error"] = "Fine not found.";
+                return RedirectToAction("AllFines");
+            }
+
+            fine.IsPaid = true;
+            await context.SaveChangesAsync();
+
+            var member = fine.Loan?.Member;
+            if (member != null && member.IsBlocked)
+            {
+                var unpaidTotal = await context.Fines
+                    .Include(f => f.Loan)
+                    .Where(f => !f.IsPaid && f.Loan!.MemberId == member.Id)
+                    .SumAsync(f => (decimal?)f.Amount) ?? 0m;
+
+                if (unpaidTotal <= BlockThreshold)
+                {
+                    member.IsBlocked = false;
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            return RedirectToAction("AllFines");
         }
     }
 }

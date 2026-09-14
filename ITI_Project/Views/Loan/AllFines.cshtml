@@ -1,0 +1,48 @@
+﻿@model List<ITI_Project.Model.Fine>
+@{
+    ViewData["Title"] = "All Fines";
+    Layout = "_MyLayout";
+}
+
+<h2>All Fines</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Member</th>
+            <th>Book</th>
+            <th>Amount</th>
+            <th>Created</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var fine in Model)
+        {
+            <tr class="@(fine.IsPaid ? "" : "table-danger")">
+                <td>
+                    @fine.Loan?.Member?.UserName
+                    @if (fine.Loan?.Member?.IsBlocked == true)
+                    {
+                        <span class="badge bg-dark">Blocked</span>
+                    }
+                </td>
+                <td>@fine.Loan?.BookCopy?.Book?.Title</td>
+                <td>@fine.Amount.ToString("0.00") EGP</td>
+                <td>@fine.CreatedDate.ToString("yyyy-MM-dd")</td>
+                <td>@(fine.IsPaid ? "Paid" : "Unpaid")</td>
+                <td>
+                    @if (!fine.IsPaid)
+                    {
+                        <form asp-action="MarkFinePaid" asp-controller="Loan" method="post"
+                              onsubmit="return confirm('Mark this fine as paid?');">
+                            <input type="hidden" name="fineId" value="@fine.Id" />
+                            <button type="submit" class="btn btn-sm btn-success">Mark Paid</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

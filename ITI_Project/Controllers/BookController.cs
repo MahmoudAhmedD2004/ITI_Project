@@ -217,7 +217,23 @@ namespace ITI_Project.Controllers
             return View(model);
         }
         [HttpGet]
+        [Authorize(Roles = "Librarian,Admin")]
         public async Task<IActionResult> Delete(int id)
+        {
+            var book = await context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Category)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (book == null) return RedirectToAction("Index", "Book");
+
+            return View(book);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Librarian,Admin")]
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var book = await context.Books.FindAsync(id);
             if (book is not null)
@@ -226,7 +242,6 @@ namespace ITI_Project.Controllers
                 await context.SaveChangesAsync();
             }
             return RedirectToAction("Index", "Book");
-
         }
         [HttpGet]
         public async Task<IActionResult> Edit(int id)

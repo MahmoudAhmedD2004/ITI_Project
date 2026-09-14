@@ -6,6 +6,21 @@
 
 <h2>My Loans</h2>
 
+@{
+    var totalUnpaid = Model.Where(l => l.Fines != null && !l.Fines.IsPaid).Sum(l => l.Fines!.Amount);
+}
+
+@if (totalUnpaid > 0)
+{
+    <div class="alert @(totalUnpaid > 100 ? "alert-danger" : "alert-warning")">
+        You have <strong>@totalUnpaid.ToString("0.00") EGP</strong> in unpaid fines.
+        @if (totalUnpaid > 100)
+        {
+            <text> Your account is currently blocked from new borrow requests until this is paid.</text>
+        }
+    </div>
+}
+
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success">@TempData["Success"]</div>

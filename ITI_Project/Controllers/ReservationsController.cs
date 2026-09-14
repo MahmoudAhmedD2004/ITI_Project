@@ -2,6 +2,7 @@
 using ITI_Project.Data;
 using ITI_Project.Model;
 using ITI_Project.ModelView;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
@@ -40,6 +41,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Member")]
         public async Task<IActionResult> Create( int bookId, int memberId)
         {
             var existingReservation = await context.Reservations

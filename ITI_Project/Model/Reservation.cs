@@ -12,7 +12,9 @@ namespace ITI_Project.Model
         public int MemberId { get; set; } 
         public DateTime ReservationDate { get; set; }
         public  string Status { get; set; } = "";
+        [DeleteBehavior(DeleteBehavior.Restrict)]
         public Book? Book { get; set; }
+        [DeleteBehavior(DeleteBehavior.Restrict)]
         public Member? Member { get; set; }
     }
 }

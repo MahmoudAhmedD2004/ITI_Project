@@ -1,0 +1,149 @@
+﻿@model IEnumerable<ITI_Project.ModelView.ReservationViewModel>
+
+@{
+    ViewData["Title"] = "Reservations & Waiting List";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h4">Reservations & Waiting List</h2>
+    <button type="button" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#createReservationModal">
+        + New Reservation
+    </button>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card card-body border-0 shadow table-wrapper table-responsive">
+    <table class="table table-hover align-items-center">
+        <thead>
+            <tr>
+                <th class="border-gray-200">#</th>
+                <th class="border-gray-200">Book Title</th>
+                <th class="border-gray-200">Member Name</th>
+                <th class="border-gray-200">Reservation Date</th>
+                <th class="border-gray-200">Queue Position</th>
+                <th class="border-gray-200">Status</th>
+                <th class="border-gray-200">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model == null || !Model.Any())
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No reservations found.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var res in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">@res.Id</td>
+                        <td class="fw-bold text-dark">@res.BookTitle</td>
+                        <td>
+                            <span class="fw-normal">@res.MemberName</span><br />
+                            <small class="text-muted">@res.MemberEmail</small>
+                        </td>
+                        <td>@res.ReservationDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
+                            @if (string.Equals(res.Status, "Pending", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge bg-info text-dark">#@res.QueuePosition in line</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td>
+                            @if (string.Equals(res.Status, "Pending", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                            else if (string.Equals(res.Status, "Fulfilled", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge bg-success">Fulfilled</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Cancelled</span>
+                            }
+                        </td>
+                        <td>
+                            @if (string.Equals(res.Status, "Pending", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <form asp-action="Cancel" asp-route-id="@res.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this reservation?');">
+                                        Cancel
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Create Reservation -->
+<div class="modal fade" id="createReservationModal" tabindex="-1" aria-labelledby="createReservationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createReservationModalLabel">Add New Reservation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Reservations" asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Book</label>
+                        <select name="bookId" class="form-select" required>
+                            <option value="">-- Select Book --</option>
+                            @if (ViewBag.Books != null)
+                            {
+                                foreach (var book in ViewBag.Books)
+                                {
+                                    <option value="@book.Id">@book.Title</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Member</label>
+                        <select name="memberId" class="form-select" required>
+                            <option value="">-- Select Member --</option>
+                            @if (ViewBag.Members != null)
+                            {
+                                foreach (var member in ViewBag.Members)
+                                {
+                                    <option value="@member.Id">@member.UserName (@member.Email)</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-secondary">Save Reservation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

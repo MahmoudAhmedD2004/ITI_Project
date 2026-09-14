@@ -1,5 +1,6 @@
 ﻿using ITI_Project.Data;
 using ITI_Project.Model;
+using ITI_Project.ModelView;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace ITI_Project.Controllers
         // ---------- Member actions ----------
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> RequestBorrow(int bookCopyId)
         {
             var member = await GetCurrentMemberAsync();
@@ -87,8 +89,10 @@ namespace ITI_Project.Controllers
             await context.SaveChangesAsync();
 
             TempData["Success"] = "Return request sent. Please bring the book to the desk.";
-            return RedirectToAction("MyLoans");
+            return RedirectToAction("Review",new { loanId });//
         }
+
+        
 
         // ---------- Staff actions (Librarian / Admin) ----------
 
@@ -304,6 +308,31 @@ namespace ITI_Project.Controllers
             }
 
             return RedirectToAction("AllFines");
+        }
+        // Add review
+        public async Task<IActionResult> Review(int loanId)
+        {
+            ReviewViewModel model = new();
+            model.Loan = await context.Loans.Include(b => b.BookCopy)
+                .ThenInclude(b => b.Book)
+                .FirstOrDefaultAsync(l=>l.Id==loanId);
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddReview(ReviewViewModel review)
+        {
+            var loan = await context.Loans.Include(b => b.BookCopy)
+                .ThenInclude(b => b.Book)
+                .FirstOrDefaultAsync(l => l.Id == review.LoanId);
+            Review review1 = new();
+            review1.Rating = review.Rating;
+            review1.Comment = review.Comment;
+            review1.MemberId = loan.MemberId;
+            review1.BookId = loan.BookCopy.Book.Id;
+
+            await context.Reviews.AddAsync(review1);
+            await context.SaveChangesAsync();
+            return Redirect("MyLoans");
         }
     }
 }

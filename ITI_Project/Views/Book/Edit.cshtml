@@ -1,6 +1,7 @@
 ﻿@model BookViewModel
 <div class="container">
-    <form asp-action="EditBook" asp-controller="Book" method="post" enctype="multipart/form-data">
+    <form asp-action="EditBook" asp-controller="Book" method="post" enctype="multipart/form-data"
+          onsubmit="return confirm('Are you sure to edit this Book?')">
 
         <input type="hidden" asp-for="Book.Id" />
 

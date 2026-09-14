@@ -71,14 +71,14 @@ namespace ITI_Project.Data
                 int copy1Id = (bookId - 1) * 2 + 1;
                 int copy2Id = (bookId - 1) * 2 + 2;
 
-                copies.Add(new BookCopy { Id = copy1Id, Barcode = $"BC-{copy1Id:D4}", Status = "Available", BookId = bookId });
-                copies.Add(new BookCopy { Id = copy2Id, Barcode = $"BC-{copy2Id:D4}", Status = "Available", BookId = bookId });
+                copies.Add(new BookCopy { Id = copy1Id, Barcode = $"BC-{copy1Id:D4}", Status = BookCopyStatus.Available, BookId = bookId });
+                copies.Add(new BookCopy { Id = copy2Id, Barcode = $"BC-{copy2Id:D4}", Status = BookCopyStatus.Available, BookId = bookId });
             }
             // Mark a few copies as currently borrowed, matching the seeded Loans below
-            copies.First(c => c.Id == 1).Status = "Borrowed";   // Midaq Alley
-            copies.First(c => c.Id == 3).Status = "Borrowed";   // Palace Walk
-            copies.First(c => c.Id == 13).Status = "Borrowed";  // One Hundred Years of Solitude
-            copies.First(c => c.Id == 23).Status = "Borrowed";  // The Shadow of the Wind
+            copies.First(c => c.Id == 1).Status = BookCopyStatus.Borrowed;   // Midaq Alley
+            copies.First(c => c.Id == 3).Status = BookCopyStatus.Borrowed;   // Palace Walk
+            copies.First(c => c.Id == 13).Status = BookCopyStatus.Borrowed;  // One Hundred Years of Solitude
+            copies.First(c => c.Id == 23).Status = BookCopyStatus.Borrowed;  // The Shadow of the Wind
 
             modelBuilder.Entity<BookCopy>().HasData(copies);
 
@@ -110,11 +110,11 @@ namespace ITI_Project.Data
             );
 
             modelBuilder.Entity<Loan>().HasData(
-                new Loan { Id = 1, BorrowDate = new DateTime(2026, 8, 20), DueDate = new DateTime(2026, 9, 3), ReturnDate = null, BookCopyId = 1, MemberId = 4 },   // overdue
-                new Loan { Id = 2, BorrowDate = new DateTime(2026, 9, 5), DueDate = new DateTime(2026, 9, 19), ReturnDate = null, BookCopyId = 3, MemberId = 5 },  // current
-                new Loan { Id = 3, BorrowDate = new DateTime(2026, 9, 1), DueDate = new DateTime(2026, 9, 15), ReturnDate = null, BookCopyId = 13, MemberId = 6 }, // current
-                new Loan { Id = 4, BorrowDate = new DateTime(2026, 8, 25), DueDate = new DateTime(2026, 9, 8), ReturnDate = null, BookCopyId = 23, MemberId = 7 }  // overdue
-            );
+    new Loan { Id = 1, RequestDate = new DateTime(2026, 8, 20), BorrowDate = new DateTime(2026, 8, 20), DueDate = new DateTime(2026, 9, 3), ReturnDate = null, Status = LoanStatus.Active, BookCopyId = 1, MemberId = 4 },   // overdue
+    new Loan { Id = 2, RequestDate = new DateTime(2026, 9, 5), BorrowDate = new DateTime(2026, 9, 5), DueDate = new DateTime(2026, 9, 19), ReturnDate = null, Status = LoanStatus.Active, BookCopyId = 3, MemberId = 5 },  // current
+    new Loan { Id = 3, RequestDate = new DateTime(2026, 9, 1), BorrowDate = new DateTime(2026, 9, 1), DueDate = new DateTime(2026, 9, 15), ReturnDate = null, Status = LoanStatus.Active, BookCopyId = 13, MemberId = 6 }, // current
+    new Loan { Id = 4, RequestDate = new DateTime(2026, 8, 25), BorrowDate = new DateTime(2026, 8, 25), DueDate = new DateTime(2026, 9, 8), ReturnDate = null, Status = LoanStatus.Active, BookCopyId = 23, MemberId = 7 }  // overdue
+);
 
             modelBuilder.Entity<Review>().HasData(
                 new Review { Id = 1, BookId = 1, MemberId = 8, Rating = 5, Comment = "A vivid portrait of Cairo life, still feels alive today.", CreatedDate = new DateTime(2026, 6, 1) },

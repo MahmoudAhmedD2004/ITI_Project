@@ -47,8 +47,8 @@
         <label>Availability</label>
         <select name="Filter.Availability" onchange="this.form.submit()">
             <option value="">All</option>
-            <option value="Available" selected="@(Model.Filter.Availability == "Available")">Available</option>
-            <option value="Unavailable" selected="@(Model.Filter.Availability == "Unavailable")">Unavailable</option>
+            <option value="Available" selected="@(Model.Filter.Availability == ITI_Project.Model.BookCopyStatus.Available)">Available</option>
+            <option value="Borrowed" selected="@(Model.Filter.Availability == ITI_Project.Model.BookCopyStatus.Borrowed)">Borrowed</option>
         </select>
     </div>
 

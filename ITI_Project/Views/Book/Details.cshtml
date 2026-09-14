@@ -16,12 +16,14 @@
                     <span>@Model.Initials</span>
                 }
             </div>
-            @if (User.IsInRole("Member"))
+            @if (User.Identity!.IsAuthenticated && !User.IsInRole("Librarian") && !User.IsInRole("Admin"))
             {
-                <a class="btn btn-oak details-borrow" id="details-borrow-btn" asp-action="Borrow"
-                asp-controller="Loan">
-                Borrow this book
-             </a>
+                <form asp-action="RequestBorrow" asp-controller="Loan" method="post">
+                    <input type="hidden" name="bookCopyId" value="@(Model.BookCopies.FirstOrDefault(bc => bc.Status == ITI_Project.Model.BookCopyStatus.Available)?.Id)" />
+                    <button type="submit" class="btn btn-oak" @(Model.BookCopies.Any(bc => bc.Status == ITI_Project.Model.BookCopyStatus.Available) ? "" : "disabled")>
+                        Request to Borrow
+                    </button>
+                </form>
             }
             @if (User.IsInRole("Librarian"))
             {
@@ -35,7 +37,7 @@
                 </a>
             }
             <div class="details-copies" id="details-copies">
-                @Model.BookCopies.Where(bc => bc.Status == "Available").Count()
+                @Model.BookCopies.Where(bc => bc.Status == ITI_Project.Model.BookCopyStatus.Available).Count()
                  of @Model.BookCopies.Count copies available
             </div>
         </div>

@@ -64,9 +64,9 @@ namespace ITI_Project.Controllers
                      (string.IsNullOrEmpty(model.Filter.BookLanguage) ||
                          b.BookLanguage == model.Filter.BookLanguage) &&
 
-                     (string.IsNullOrEmpty(model.Filter.Availability) ||
-                         b.BookCopies.Any(bc =>
-                             bc.Status == model.Filter.Availability))
+                     (model.Filter.Availability == null ||
+    b.BookCopies.Any(bc =>
+        bc.Status == model.Filter.Availability))
                  )
                  .ToListAsync();
             switch (model.Filter.SortBy)
@@ -172,40 +172,47 @@ namespace ITI_Project.Controllers
         }
         public async Task<IActionResult> Report(ReportViewModel model)
         {
-            model.Loans = await context.Loans.Include(l=>l.Member)
-                .Include(l=>l.BookCopy).ThenInclude(bc=>bc.Book)
-                .Where(l =>  l.ReturnDate > l.DueDate.AddDays(14)).
-                ToListAsync();
-            var loans = await context.Loans.GroupBy(l=>l.BookCopyId)
-                .Select(g => new {g.Key, Count= g.Count() }).
-                Take(10).ToListAsync();
+            model.Loans = await context.Loans.Include(l => l.Member)
+                .Include(l => l.BookCopy).ThenInclude(bc => bc.Book)
+                .Where(l => l.Status == LoanStatus.Returned
+                         && l.ReturnDate != null
+                         && l.DueDate != null
+                         && l.ReturnDate > l.DueDate.Value.AddDays(14))
+                .ToListAsync();
+
+            var loans = await context.Loans.GroupBy(l => l.BookCopyId)
+                .Select(g => new { g.Key, Count = g.Count() })
+                .Take(10).ToListAsync();
+
             foreach (var l in loans)
             {
                 var book = await context.BookCopies.Include(bc => bc.Book)
-                    
                     .FirstOrDefaultAsync(bc => bc.Id == l.Key);
-                model.MostBorrowed[book.Book.Title] = l.Count;
+                if (book?.Book != null)
+                    model.MostBorrowed[book.Book.Title] = l.Count;
             }
+
             var category = await context.Categories.Include(c => c.Books).ThenInclude(b => b.BookCopies)
                 .ThenInclude(bc => bc.Loans).ToListAsync();
             model.Categories = category
-            .Where(c => c.Books.All(b => b.BookCopies.All(bc => !bc.Loans.Any())))
-            .ToList();
+                .Where(c => c.Books.All(b => b.BookCopies.All(bc => !bc.Loans.Any())))
+                .ToList();
 
             var loansPerMonth = await context.Loans
-            .GroupBy(l => new { l.BorrowDate.Year, l.BorrowDate.Month })
-            .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
-            .OrderBy(g => g.Year).ThenBy(g => g.Month)
-            .ToListAsync();
+                .Where(l => l.BorrowDate != null)
+                .GroupBy(l => new { l.BorrowDate!.Value.Year, l.BorrowDate!.Value.Month })
+                .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+                .OrderBy(g => g.Year).ThenBy(g => g.Month)
+                .ToListAsync();
 
             var labels = loansPerMonth
-            .Select(x => new DateTime(x.Year, x.Month, 1).ToString("MMM yyyy"))
-            .ToList();
+                .Select(x => new DateTime(x.Year, x.Month, 1).ToString("MMM yyyy"))
+                .ToList();
 
             var values = loansPerMonth.Select(x => x.Count).ToList();
 
-            ViewBag.ChartLabels = labels;   // ["Jan 2026", "Feb 2026", ...]
-            ViewBag.ChartValues = values;   // [12, 20, 15, ...]
+            ViewBag.ChartLabels = labels;
+            ViewBag.ChartValues = values;
 
             return View(model);
         }

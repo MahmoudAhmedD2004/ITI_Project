@@ -1,0 +1,77 @@
+﻿@model List<ITI_Project.Model.Loan>
+@{
+    ViewData["Title"] = "My Loans";
+    Layout = "_MyLayout";
+}
+
+<h2>My Loans</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Book</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th>Fine</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var loan in Model)
+        {
+            <tr>
+                <td>@loan.BookCopy?.Book?.Title</td>
+                <td>@loan.Status</td>
+                <td>@(loan.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                <td>
+                    @if (loan.Fines != null)
+                    {
+                        @($"{loan.Fines.Amount:0.00} EGP" + (loan.Fines.IsPaid ? " (Paid)" : " (Unpaid)"))
+                    }
+                    else
+                    {
+                        @:-
+                    }
+                </td>
+                <td>
+                    @if (loan.Status == ITI_Project.Model.LoanStatus.Requested)
+                    {
+                        <form asp-action="CancelBorrowRequest" asp-controller="Loan" method="post"
+                              onsubmit="return confirm('Cancel this borrow request?');">
+                            <input type="hidden" name="loanId" value="@loan.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Cancel Request</button>
+                        </form>
+                    }
+                    @if (loan.Status == ITI_Project.Model.LoanStatus.Active)
+                    {
+                        <form asp-action="RequestReturn" asp-controller="Loan" method="post">
+                            <input type="hidden" name="loanId" value="@loan.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Request Return</button>
+                        </form>
+                    }
+                    @if (loan.Status == ITI_Project.Model.LoanStatus.ReturnRequested)
+                    {
+                        <form asp-action="CancelReturnRequest" asp-controller="Loan" method="post"
+                              onsubmit="return confirm('Cancel this return request?');">
+                            <input type="hidden" name="loanId" value="@loan.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Cancel Return</button>
+                        </form>
+                    }
+                    @if (loan.Status == ITI_Project.Model.LoanStatus.Rejected && !string.IsNullOrEmpty(loan.RejectionReason))
+                    {
+                        <span class="text-muted">Reason: @loan.RejectionReason</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

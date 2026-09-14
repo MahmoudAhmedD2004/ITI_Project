@@ -1,0 +1,36 @@
+﻿@model List<ITI_Project.Model.Loan>
+@{
+    ViewData["Title"] = "Pending Returns";
+    Layout = "_MyLayout";
+}
+
+<h2>Pending Returns</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Member</th>
+            <th>Book</th>
+            <th>Due Date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var loan in Model)
+        {
+            var isLate = DateTime.Now > loan.DueDate;
+            <tr class="@(isLate ? "table-danger" : "")">
+                <td>@loan.Member?.UserName</td>
+                <td>@loan.BookCopy?.Book?.Title</td>
+                <td>@loan.DueDate?.ToString("yyyy-MM-dd") @(isLate ? "(late)" : "")</td>
+                <td>
+                    <form asp-action="ConfirmReturn" asp-controller="Loan" method="post"
+                          onsubmit="return confirm('Confirm this book was returned?');">
+                        <input type="hidden" name="loanId" value="@loan.Id" />
+                        <button type="submit" class="btn btn-sm btn-primary">Confirm Return</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

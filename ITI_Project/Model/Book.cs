@@ -26,7 +26,7 @@ namespace ITI_Project.Model
         [DeleteBehavior(DeleteBehavior.Restrict)]
         public Category? Category { get; set; } 
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
-        public ICollection<Reservation>    Reservations { get; set; } = new List<Reservation>();
+        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
         public ICollection<BookCopy> BookCopies { get; set; } = new List<BookCopy>();
 
         [NotMapped]

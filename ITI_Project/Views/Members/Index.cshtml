@@ -1,0 +1,65 @@
+﻿@model IEnumerable<ITI_Project.ModelView.MemberViewModel>
+
+@{
+    ViewData["Title"] = "Members Administration";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Members Administration</h2>
+</div>
+
+<div class="card card-body border-0 shadow table-wrapper table-responsive">
+    <table class="table table-hover align-items-center">
+        <thead>
+            <tr>
+                <th class="border-gray-200">#</th>
+                <th class="border-gray-200">Member Name</th>
+                <th class="border-gray-200">Email</th>
+                <th class="border-gray-200">Membership Expiry</th>
+                <th class="border-gray-200">Active Loans</th>
+                <th class="border-gray-200">Status</th>
+                <th class="border-gray-200">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var member in Model)
+            {
+                <tr>
+                    <td>@member.Id</td>
+                    <td class="fw-bold">@member.UserName</td>
+                    <td>@member.Email</td>
+                    <td>@member.MembershipExpiryDate.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <span class="badge bg-info">@member.ActiveLoansCount Books</span>
+                    </td>
+                    <td>
+                        @if (member.IsBlocked)
+                        {
+                            <span class="badge bg-danger">Blocked</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@member.Id" class="btn btn-sm btn-outline-primary me-2">
+                            View Loans
+                        </a>
+
+                        <form asp-action="ToggleBlock" asp-route-id="@member.Id" method="post" class="d-inline">
+                            @if (member.IsBlocked)
+                            {
+                                <button type="submit" class="btn btn-sm btn-success">Unblock</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to block this member?');">Block</button>
+                            }
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

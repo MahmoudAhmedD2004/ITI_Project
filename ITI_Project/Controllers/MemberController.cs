@@ -61,7 +61,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Signup(string username,string email,string phone,string passwod)
+        public async Task<IActionResult> Signup(string username,string email,string phone,string password)
         {
             if (!ModelState.IsValid)
             {
@@ -72,7 +72,7 @@ namespace ITI_Project.Controllers
                 UserName = username,
                 Email = email,
                 PhoneNumber = phone,
-                PasswordHash = passwod,
+                PasswordHash = password,
                 Role = Role.Member,
                 MembershipStartDate = DateTime.Now,
                 MembershipExpiryDate = DateTime.Now.AddDays(30)

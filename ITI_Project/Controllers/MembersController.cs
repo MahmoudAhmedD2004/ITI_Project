@@ -1,5 +1,6 @@
 ﻿using ITI_Project.Data;
 using ITI_Project.ModelView;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace ITI_Project.Controllers
     public class MembersController (AppDbContext context) : Controller
     {
         [HttpGet]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Index()
         {
             var members = await context.Members

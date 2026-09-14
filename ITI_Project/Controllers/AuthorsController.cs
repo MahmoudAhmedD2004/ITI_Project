@@ -1,10 +1,11 @@
-﻿using System.Linq.Expressions;
-using System.Threading.Tasks;
-using ITI_Project.Data;
+﻿using ITI_Project.Data;
+using ITI_Project.Model;
 using ITI_Project.ModelView;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ITI_Project.Model;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace ITI_Project.Controllers
 {
@@ -21,10 +22,12 @@ namespace ITI_Project.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create() => View(new AuthorViewModel());
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(AuthorViewModel model, [FromServices] IWebHostEnvironment webHost)
         {
             if (!ModelState.IsValid) return View(model);
@@ -87,6 +90,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit (int id)
         {
             var author = await context.Authors.FindAsync(id);
@@ -105,6 +109,7 @@ namespace ITI_Project.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, AuthorViewModel model, [FromServices] IWebHostEnvironment webHost)
         {
             if (id != model.Id) return BadRequest();
@@ -143,6 +148,7 @@ namespace ITI_Project.Controllers
         
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete (int id)
         {
             var author = await context.Authors.FindAsync(id);

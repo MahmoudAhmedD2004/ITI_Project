@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ITI_Project.Data;
+﻿using ITI_Project.Data;
 using ITI_Project.Model;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -18,6 +19,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Librarian")]
         public async Task<IActionResult> Create(Category category)
         {
             if (ModelState.IsValid)
@@ -29,6 +31,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Librarian")]
         public async Task<IActionResult> Edit (Category category)
         {
             if (ModelState.IsValid)
@@ -40,6 +43,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Librarian")]
         public async Task<IActionResult> Delete(int id)
         {
             var category = await context.Categories.FindAsync(id);

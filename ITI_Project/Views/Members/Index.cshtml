@@ -43,20 +43,21 @@
                         }
                     </td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@member.Id" class="btn btn-sm btn-outline-primary me-2">
+                        <a asp-action="MyLoans" asp-controller="Loan"  asp-route-id="@member.Id" class="btn btn-sm btn-outline-primary me-2">
                             View Loans
                         </a>
-
-                        <form asp-action="ToggleBlock" asp-route-id="@member.Id" method="post" class="d-inline">
-                            @if (member.IsBlocked)
-                            {
-                                <button type="submit" class="btn btn-sm btn-success">Unblock</button>
-                            }
-                            else
-                            {
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to block this member?');">Block</button>
-                            }
-                        </form>
+                       
+                            <form asp-action="ToggleBlock" asp-route-id="@member.Id" method="post" class="d-inline">
+                                @if (member.IsBlocked)
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-success">Unblock</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to block this member?');">Block</button>
+                                    }
+                                </form>
+                        
                     </td>
                 </tr>
             }

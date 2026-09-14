@@ -38,7 +38,7 @@ namespace ITI_Project.Controllers
             {
                 {
                     // 1. تحديد فولدر الحفظ داخل wwwroot
-                    string uploadsFolder = Path.Combine(webHost.WebRootPath, "upload", "authors");
+                    string uploadsFolder = Path.Combine(webHost.WebRootPath, "uploads", "authors");
                     if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
                     // 2. انشاء اسم فريد للملف
@@ -50,7 +50,7 @@ namespace ITI_Project.Controllers
                     {
                         await model.Photo.CopyToAsync(fileStream);
                     }
-                    photoPath = "/uploads/authors" + uniqueFileName;
+                    photoPath = "/uploads/authors/" + uniqueFileName;
                 }
             }
 

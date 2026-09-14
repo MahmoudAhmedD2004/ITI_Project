@@ -61,12 +61,32 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Signup(string username,string email,string phone,string password)
+        [HttpPost]
+        public async Task<IActionResult> Signup(string username, string email, string phone, string password)
         {
+            if (string.IsNullOrWhiteSpace(username) || username.Length < 3)
+                ModelState.AddModelError("", "Username must be at least 3 characters.");
+
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+                ModelState.AddModelError("", "Please enter a valid email.");
+
+            if (string.IsNullOrWhiteSpace(phone))
+                ModelState.AddModelError("", "Phone number is required.");
+
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
+                ModelState.AddModelError("", "Password must be at least 6 characters.");
+
+            if (await context.Members.AnyAsync(m => m.UserName == username))
+                ModelState.AddModelError("", "This username is already taken.");
+
+            if (await context.Members.AnyAsync(m => m.Email == email))
+                ModelState.AddModelError("", "This email is already registered.");
+
             if (!ModelState.IsValid)
             {
                 return View("Index");
             }
+
             var member = new Member
             {
                 UserName = username,
@@ -79,7 +99,7 @@ namespace ITI_Project.Controllers
             };
             await context.Members.AddAsync(member);
             await context.SaveChangesAsync();
-            return RedirectToAction("Index","Book");
+            return RedirectToAction("Index", "Book");
         }
     }
 }

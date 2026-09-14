@@ -179,7 +179,7 @@ namespace ITI_Project.Controllers
 
             loan.Status = LoanStatus.Rejected;
             loan.RejectionReason = string.IsNullOrWhiteSpace(reason) ? "No reason provided." : reason;
-            loan.BookCopy!.Status = BookCopyStatus.Available;
+            await PromoteNextReservationAsync(loan.BookCopy!);
 
             await context.SaveChangesAsync();
             return RedirectToAction("PendingRequests");
@@ -214,7 +214,7 @@ namespace ITI_Project.Controllers
 
             loan.ReturnDate = DateTime.Now;
             loan.Status = LoanStatus.Returned;
-            loan.BookCopy!.Status = BookCopyStatus.Available;
+            await PromoteNextReservationAsync(loan.BookCopy!);
 
             if (loan.ReturnDate > loan.DueDate)
             {
@@ -261,7 +261,7 @@ namespace ITI_Project.Controllers
             }
 
             loan.Status = LoanStatus.Cancelled;
-            loan.BookCopy!.Status = BookCopyStatus.Available;
+            await PromoteNextReservationAsync(loan.BookCopy!);
 
             await context.SaveChangesAsync();
 

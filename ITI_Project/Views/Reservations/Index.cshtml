@@ -93,4 +93,16 @@
             }
         </tbody>
     </table>
+    @if ((int?)ViewBag.TotalPages > 1)
+    {
+        <nav style="display:flex; gap:4px; margin-top:12px;">
+            @for (int p = 1; p <= (int)ViewBag.TotalPages; p++)
+            {
+                <a asp-action="Index" asp-route-page="@p"
+                   class="btn btn-sm @(p == (int)ViewBag.CurrentPage ? "btn-oak" : "btn-ghost")">
+                    @p
+                </a>
+            }
+        </nav>
+    }
 </div>

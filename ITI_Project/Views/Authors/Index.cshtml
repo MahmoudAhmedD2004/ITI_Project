@@ -29,8 +29,7 @@
                 <img src="@(string.IsNullOrEmpty(author.Photo) ? "https://via.placeholder.com/80" : (author.Photo.StartsWith("/") ? author.Photo : "/" + author.Photo))"
                      alt="@author.Name"
                      style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 1px solid #eee;"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/80';"
-                />
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/80';" />
                 <!-- Details -->
                 <h3 style="font-size: 18px; font-weight: 600; margin: 0 0 8px 0; color: #111;">@author.Name</h3>
                 <p style="color: #666; font-size: 14px; margin: 0 0 16px 0; min-height: 40px; line-height: 1.4;">
@@ -61,4 +60,18 @@
             </div>
         }
     </div>
+    @if ((int)ViewBag.TotalPages > 1)
+    {
+        <nav style="margin-top: 24px; display:flex; gap:6px; justify-content:center; flex-wrap: wrap;">
+            @for (int p = 1; p <= (int)ViewBag.TotalPages; p++)
+            {
+                <a asp-action="Index"
+                   asp-route-page="@p"
+                   class="btn btn-sm @(p == (int)ViewBag.CurrentPage ? "btn-oak" : "btn-ghost")">
+                    @p
+                </a>
+            }
+        </nav>
+    }
+</div>
 </div>

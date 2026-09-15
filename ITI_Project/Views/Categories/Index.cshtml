@@ -21,7 +21,7 @@
                 <th class="border-gray-200">Numbers of Books</th>
                 @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
                 {
-                <th class="border-gray-200">Actions</th>
+                    <th class="border-gray-200">Actions</th>
                 }
             </tr>
         </thead>
@@ -43,6 +43,20 @@
             }
         </tbody>
     </table>
+    @if ((int)ViewBag.TotalPages > 1)
+    {
+        <nav style="margin-top: 24px; display:flex; gap:6px; justify-content:center; flex-wrap: wrap;">
+            @for (int p = 1; p <= (int)ViewBag.TotalPages; p++)
+            {
+                <a asp-action="Index"
+                   asp-route-page="@p"
+                   class="btn btn-sm @(p == (int)ViewBag.CurrentPage ? "btn-oak" : "btn-ghost")">
+                    @p
+                </a>
+            }
+        </nav>
+    }
+</div>
 </div>
 @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
 {

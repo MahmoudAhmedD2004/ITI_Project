@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITI_Project.Controllers
 {
-    public class MembersController (AppDbContext context) : Controller
+    public class MembersController(AppDbContext context) : Controller
     {
         [HttpGet]
         [Authorize(Roles = "Admin,Librarian")]
@@ -44,7 +44,8 @@ namespace ITI_Project.Controllers
         }
 
         // Block Member & UnBlock
-        [HttpPost]  
+        [HttpPost]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> ToggleBlock(int id)
         {
             var member = await context.Members.FindAsync(id);

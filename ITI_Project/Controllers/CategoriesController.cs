@@ -7,13 +7,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITI_Project.Controllers
 {
-    public class CategoriesController (AppDbContext context) : Controller
+    public class CategoriesController(AppDbContext context) : Controller
     {
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var categories = await context.Categories
-                .Include(c => c.Books)
+            const int pageSize = 10;
+            if (page < 1) page = 1;
+
+            var query = context.Categories.Include(c => c.Books).AsQueryable();
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            if (totalPages > 0 && page > totalPages) page = totalPages;
+
+            var categories = await query
+                .OrderBy(c => c.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
 
             return View(categories);
         }
@@ -30,8 +44,6 @@ namespace ITI_Project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        [Authorize(Roles = "Admin,Librarian")]
         [HttpGet]
         [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Edit(int id)

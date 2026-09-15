@@ -21,7 +21,7 @@ namespace ITI_Project.Controllers
         {
             var member = await context.Members
                 .FirstOrDefaultAsync(m => m.UserName == username);
-            
+
 
             if (member != null && member.PasswordHash == password)
             {
@@ -32,12 +32,12 @@ namespace ITI_Project.Controllers
                 };
 
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var principal = new ClaimsPrincipal(identity);
+                var principal = new ClaimsPrincipal(identity);
 
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                    return RedirectToAction("Index", "Book");
-                }
+                return RedirectToAction("Index", "Book");
+            }
 
             ModelState.AddModelError("", "Invalid username or password");
             return View("Index");
@@ -45,7 +45,7 @@ namespace ITI_Project.Controllers
         [Authorize]
         public async Task<IActionResult> Profile()
         {
-            var member = await context.Members.Where(m=>m.UserName==User.Identity.Name).FirstOrDefaultAsync();
+            var member = await context.Members.Where(m => m.UserName == User.Identity.Name).FirstOrDefaultAsync();
 
             if (member == null)
                 return RedirectToAction("Index");
@@ -60,7 +60,6 @@ namespace ITI_Project.Controllers
             return RedirectToAction("Index", "Book");
         }
 
-        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> Signup(string username, string email, string phone, string password)
         {

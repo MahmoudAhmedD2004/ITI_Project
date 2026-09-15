@@ -12,11 +12,26 @@ namespace ITI_Project.Controllers
     public class AuthorsController(AppDbContext context) : Controller
     {
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var authors = await context.Authors
-                .Include(a => a.Books)
+            const int pageSize = 10;
+            if (page < 1) page = 1;
+
+            var query = context.Authors.Include(a => a.Books).AsQueryable();
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            if (totalPages > 0 && page > totalPages) page = totalPages;
+
+            var authors = await query
+                .OrderBy(a => a.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
             return View(authors);
         }
 
@@ -63,7 +78,7 @@ namespace ITI_Project.Controllers
 
             context.Authors.Add(author);
             await context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));   
+            return RedirectToAction(nameof(Index));
         }
 
 
@@ -91,7 +106,7 @@ namespace ITI_Project.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,Librarian")]
-        public async Task<IActionResult> Edit (int id)
+        public async Task<IActionResult> Edit(int id)
         {
             var author = await context.Authors.FindAsync(id);
 

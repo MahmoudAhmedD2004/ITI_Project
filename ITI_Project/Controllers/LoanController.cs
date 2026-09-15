@@ -118,10 +118,10 @@ namespace ITI_Project.Controllers
             await context.SaveChangesAsync();
 
             TempData["Success"] = "Return request sent. Please bring the book to the desk.";
-            return RedirectToAction("Review",new { loanId });//
+            return RedirectToAction("Review", new { loanId });//
         }
 
-        
+
 
         // ---------- Staff actions (Librarian / Admin) ----------
 
@@ -243,7 +243,7 @@ namespace ITI_Project.Controllers
             loan.Status = LoanStatus.Returned;
             loan.BookCopy!.Status = BookCopyStatus.Available;
 
-            // حساب الغرامة بناءً على ReturnDate و DueDate
+            // Calculate the fine based on ReturnDate vs DueDate
             if (loan.ReturnDate != null && loan.DueDate != null && loan.ReturnDate.Value.Date > loan.DueDate.Value.Date)
             {
                 var daysLate = (loan.ReturnDate.Value.Date - loan.DueDate.Value.Date).Days;
@@ -264,13 +264,13 @@ namespace ITI_Project.Controllers
                 }
                 else
                 {
-                    // لو كانت موجودة (نادرة لكن ممكن)، ما نحدّثش
+                    // Fine already exists (rare but possible) - recalculate its amount
                     existingFine.Amount = fineAmount;
                 }
 
                 await context.SaveChangesAsync();
 
-                // تحديث status البلوك لو الإجمالي الغير مدفوع > 100
+                // Update the member's blocked status if unpaid total exceeds the threshold
                 var unpaidTotal = await context.Fines
                     .Include(f => f.Loan)
                     .Where(f => !f.IsPaid && f.Loan!.MemberId == loan.MemberId)
@@ -335,17 +335,16 @@ namespace ITI_Project.Controllers
         }
 
         [Authorize(Roles = "Librarian,Admin")]
-        [Authorize(Roles = "Librarian,Admin")]
         public async Task<IActionResult> AllFines()
         {
-            // الغرامات المحفوظة (اللي اتدفعت أو لسه بلاش)
+            // Saved fines (already paid or still unpaid)
             var savedFines = await context.Fines
                 .Include(f => f.Loan).ThenInclude(l => l!.Member)
                 .Include(f => f.Loan).ThenInclude(l => l!.BookCopy).ThenInclude(bc => bc!.Book)
                 .OrderByDescending(f => f.CreatedDate)
                 .ToListAsync();
 
-            // الـ Overdue Active/ReturnRequested loans (ما فيهاش Fine record بعد)
+            // Overdue Active/ReturnRequested loans that don't have a Fine record yet
             var overdueLoans = await context.Loans
                 .Include(l => l.BookCopy).ThenInclude(bc => bc.Book)
                 .Include(l => l.Member)
@@ -402,15 +401,25 @@ namespace ITI_Project.Controllers
             ReviewViewModel model = new();
             model.Loan = await context.Loans.Include(b => b.BookCopy)
                 .ThenInclude(b => b.Book)
-                .FirstOrDefaultAsync(l=>l.Id==loanId);
+                .FirstOrDefaultAsync(l => l.Id == loanId);
             return View(model);
         }
         [HttpPost]
         public async Task<IActionResult> AddReview(ReviewViewModel review)
         {
+            var member = await GetCurrentMemberAsync();
+            if (member == null) return RedirectToAction("Index", "Member");
+
             var loan = await context.Loans.Include(b => b.BookCopy)
                 .ThenInclude(b => b.Book)
                 .FirstOrDefaultAsync(l => l.Id == review.LoanId);
+
+            if (loan == null || loan.MemberId != member.Id)
+            {
+                TempData["Error"] = "This loan could not be found.";
+                return RedirectToAction("MyLoans");
+            }
+
             Review review1 = new();
             review1.Rating = review.Rating;
             review1.Comment = review.Comment;
@@ -419,7 +428,7 @@ namespace ITI_Project.Controllers
 
             await context.Reviews.AddAsync(review1);
             await context.SaveChangesAsync();
-            return Redirect("MyLoans");
+            return RedirectToAction("MyLoans");
         }
     }
 }

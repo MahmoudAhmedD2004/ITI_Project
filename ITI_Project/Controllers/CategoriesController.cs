@@ -19,7 +19,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Librarian")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Create(Category category)
         {
             if (ModelState.IsValid)
@@ -31,9 +31,9 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Librarian")]
+        [Authorize(Roles = "Admin,Librarian")]
         [HttpGet]
-        [Authorize(Roles = "Librarian")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Edit(int id)
         {
             var category = await context.Categories.FindAsync(id);
@@ -42,7 +42,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Librarian")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Edit(int id, Category category)
         {
             if (id != category.Id) return NotFound();
@@ -63,7 +63,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Librarian")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Delete(int id)
         {
             var category = await context.Categories
@@ -75,7 +75,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Librarian")]
+        [Authorize(Roles = "Admin,Librarian")]
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

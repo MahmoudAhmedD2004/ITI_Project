@@ -11,7 +11,7 @@
             <h1 style="font-family: 'Fraunces', serif; font-size: 28px; margin: 0; color: #111;">Authors</h1>
             <p style="color: #666; margin: 4px 0 0 0; font-size: 14px;">Manage and view all registered book authors</p>
         </div>
-        @if (User.IsInRole("Admin"))
+        @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
         {
             <a asp-action="Create" style="background-color: #111; color: #fff; padding: 10px 18px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
                 + Add New Author
@@ -42,13 +42,13 @@
                     <a asp-action="Details" asp-route-id="@author.Id" style="padding: 6px 12px; border: 1px solid #ccc; border-radius: 6px; color: #333; text-decoration: none; font-size: 13px;">
                         Details
                     </a>
-                    @if (User.IsInRole("Admin"))
+                    @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
                     {
                         <a asp-action="Edit" asp-route-id="@author.Id" style="padding: 6px 12px; background: #f4f4f5; border: 1px solid #e4e4e7; border-radius: 6px; color: #333; text-decoration: none; font-size: 13px;">
                             Edit
                         </a>
                     }
-                    @if (User.IsInRole("Admin"))
+                    @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
                     {
 
                         <a asp-action="Delete" asp-route-id="@author.Id"

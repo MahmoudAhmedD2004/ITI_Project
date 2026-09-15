@@ -37,7 +37,7 @@
                     </form>
                 }
             }
-            @if (User.IsInRole("Librarian"))
+            @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
             {
                 <a class="btn btn-oak details-borrow btn-edit" asp-action="Edit"
                    asp-controller="Book" asp-route-Id="@Model.Id">

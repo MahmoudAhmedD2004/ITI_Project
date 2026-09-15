@@ -370,6 +370,7 @@ h1, h2, h3, .brand {
             opacity: 1;
         }
 
+
 .sidebar-foot {
     margin-top: auto;
     padding: 14px 12px 0 12px;
@@ -384,7 +385,7 @@ text-center012 {
 }
 
 main {
-    margin-left: 280px; /* نفس عرض الـ sidebar */
+    margin-left: 280px; /* نف عرض الـ sidebar */
     padding: 1.5rem;
 }
 

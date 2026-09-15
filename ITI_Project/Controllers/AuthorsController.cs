@@ -22,12 +22,12 @@ namespace ITI_Project.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Create() => View(new AuthorViewModel());
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Create(AuthorViewModel model, [FromServices] IWebHostEnvironment webHost)
         {
             if (!ModelState.IsValid) return View(model);
@@ -90,7 +90,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Edit (int id)
         {
             var author = await context.Authors.FindAsync(id);
@@ -109,7 +109,7 @@ namespace ITI_Project.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Edit(int id, AuthorViewModel model, [FromServices] IWebHostEnvironment webHost)
         {
             if (id != model.Id) return BadRequest();
@@ -147,7 +147,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Delete(int id)
         {
             var author = await context.Authors.FindAsync(id);
@@ -156,7 +156,7 @@ namespace ITI_Project.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Librarian")]
         [ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

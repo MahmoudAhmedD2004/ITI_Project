@@ -115,7 +115,7 @@ namespace ITI_Project.Controllers
             return View(book);
         }
         [HttpGet]
-        [Authorize(Roles = "Librarian")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> CreateBook(BookViewModel model)
         {
             model.Authors = await context.Authors.ToListAsync();

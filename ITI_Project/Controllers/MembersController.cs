@@ -9,7 +9,7 @@ namespace ITI_Project.Controllers
     public class MembersController (AppDbContext context) : Controller
     {
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> Index(int page = 1)
         {
             const int pageSize = 10;

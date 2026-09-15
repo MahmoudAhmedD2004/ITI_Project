@@ -19,7 +19,7 @@
                 <th class="border-gray-200">#</th>
                 <th class="border-gray-200">Name's Category</th>
                 <th class="border-gray-200">Numbers of Books</th>
-                @if (User.IsInRole("Librarian"))
+                @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
                 {
                 <th class="border-gray-200">Actions</th>
                 }
@@ -32,7 +32,7 @@
                     <td><span class="fw-bold">@item.Id</span></td>
                     <td><span class="fw-normal">@item.Name</span></td>
                     <td><span class="badge bg-secondary">@(item.Books?.Count ?? 0) Book</span></td>
-                    @if (User.IsInRole("Librarian"))
+                    @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
                     {
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-link text-primary m-0 p-0">Edit</a>
@@ -44,7 +44,7 @@
         </tbody>
     </table>
 </div>
-@if (User.IsInRole("Librarian"))
+@if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
 {
     <!-- Modal الإضافة -->
     <div class="modal fade" id="createCategoryModal" tabindex="-1" aria-hidden="true">

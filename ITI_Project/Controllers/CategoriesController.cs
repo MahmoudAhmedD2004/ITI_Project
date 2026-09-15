@@ -32,14 +32,34 @@ namespace ITI_Project.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Librarian")]
-        public async Task<IActionResult> Edit (Category category)
+        [HttpGet]
+        [Authorize(Roles = "Librarian")]
+        public async Task<IActionResult> Edit(int id)
         {
-            if (ModelState.IsValid)
+            var category = await context.Categories.FindAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Librarian")]
+        public async Task<IActionResult> Edit(int id, Category category)
+        {
+            if (id != category.Id) return NotFound();
+
+            if (!ModelState.IsValid)
             {
-                context.Categories.Update(category);
-                await context.SaveChangesAsync();
+                return View(category);
             }
-            return RedirectToAction (nameof(Index));
+
+            var existingCategory = await context.Categories.FindAsync(id);
+            if (existingCategory == null) return NotFound();
+
+            existingCategory.Name = category.Name;
+            existingCategory.Description = category.Description;
+
+            await context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]

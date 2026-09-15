@@ -43,9 +43,9 @@
                         }
                     </td>
                     <td>
-                        <a asp-action="MyLoans" asp-controller="Loan"  asp-route-id="@member.Id" class="btn btn-sm btn-outline-primary me-2">
-                            View Loans
-                        </a>
+                       <a asp-action="Details" asp-controller="Members" asp-route-id="@member.Id" class="btn btn-sm btn-outline-primary me-2">
+    View Loans & Reservations
+</a>>
                        
                             <form asp-action="ToggleBlock" asp-route-id="@member.Id" method="post" class="d-inline">
                                 @if (member.IsBlocked)

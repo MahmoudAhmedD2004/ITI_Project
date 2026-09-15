@@ -126,6 +126,33 @@ namespace ITI_Project.Controllers
         // ---------- Staff actions (Librarian / Admin) ----------
 
         [Authorize(Roles = "Librarian,Admin")]
+        public async Task<IActionResult> AllLoans(int page = 1)
+        {
+            int pageSize = 10; // Number of loans per page
+
+            var totalLoans = await context.Loans.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalLoans / (double)pageSize);
+
+            // Ensure page is within valid range
+            if (page < 1) page = 1;
+            if (page > totalPages && totalPages > 0) page = totalPages;
+
+            var loans = await context.Loans
+                .Include(l => l.BookCopy).ThenInclude(bc => bc!.Book)
+                .Include(l => l.Member)
+                .Include(l => l.Fines)
+                .OrderByDescending(l => l.RequestDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(loans);
+        }
+
+        [Authorize(Roles = "Librarian,Admin")]
         public async Task<IActionResult> PendingRequests()
         {
             var loans = await context.Loans
@@ -214,21 +241,36 @@ namespace ITI_Project.Controllers
 
             loan.ReturnDate = DateTime.Now;
             loan.Status = LoanStatus.Returned;
-            await PromoteNextReservationAsync(loan.BookCopy!);
+            loan.BookCopy!.Status = BookCopyStatus.Available;
 
-            if (loan.ReturnDate > loan.DueDate)
+            // حساب الغرامة بناءً على ReturnDate و DueDate
+            if (loan.ReturnDate != null && loan.DueDate != null && loan.ReturnDate.Value.Date > loan.DueDate.Value.Date)
             {
-                var daysLate = (loan.ReturnDate.Value.Date - loan.DueDate!.Value.Date).Days;
-                var fine = new Fine
+                var daysLate = (loan.ReturnDate.Value.Date - loan.DueDate.Value.Date).Days;
+                var fineAmount = daysLate * FinePerDay;
+
+                var existingFine = await context.Fines.FirstOrDefaultAsync(f => f.LoanId == loan.Id);
+
+                if (existingFine == null)
                 {
-                    LoanId = loan.Id,
-                    Amount = daysLate * FinePerDay,
-                    CreatedDate = DateTime.Now,
-                    IsPaid = false
-                };
-                await context.Fines.AddAsync(fine);
+                    var fine = new Fine
+                    {
+                        LoanId = loan.Id,
+                        Amount = fineAmount,
+                        CreatedDate = DateTime.Now,
+                        IsPaid = false
+                    };
+                    await context.Fines.AddAsync(fine);
+                }
+                else
+                {
+                    // لو كانت موجودة (نادرة لكن ممكن)، ما نحدّثش
+                    existingFine.Amount = fineAmount;
+                }
+
                 await context.SaveChangesAsync();
 
+                // تحديث status البلوك لو الإجمالي الغير مدفوع > 100
                 var unpaidTotal = await context.Fines
                     .Include(f => f.Loan)
                     .Where(f => !f.IsPaid && f.Loan!.MemberId == loan.MemberId)
@@ -242,32 +284,6 @@ namespace ITI_Project.Controllers
 
             await context.SaveChangesAsync();
             return RedirectToAction("PendingReturns");
-        }
-        [Authorize(Roles = "Librarian,Admin")]
-        public async Task<IActionResult> AllLoans(int page = 1)
-        {
-            const int pageSize = 10;
-            if (page < 1) page = 1;
-
-            var query = context.Loans
-                .Include(l => l.BookCopy).ThenInclude(bc => bc.Book)
-                .Include(l => l.Member)
-                .Include(l => l.Fines)
-                .OrderByDescending(l => l.RequestDate);
-
-            var totalCount = await query.CountAsync();
-            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-            if (totalPages > 0 && page > totalPages) page = totalPages;
-
-            var loans = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = totalPages;
-
-            return View(loans);
         }
 
         [HttpPost]
@@ -319,15 +335,31 @@ namespace ITI_Project.Controllers
         }
 
         [Authorize(Roles = "Librarian,Admin")]
+        [Authorize(Roles = "Librarian,Admin")]
         public async Task<IActionResult> AllFines()
         {
-            var fines = await context.Fines
+            // الغرامات المحفوظة (اللي اتدفعت أو لسه بلاش)
+            var savedFines = await context.Fines
                 .Include(f => f.Loan).ThenInclude(l => l!.Member)
                 .Include(f => f.Loan).ThenInclude(l => l!.BookCopy).ThenInclude(bc => bc!.Book)
                 .OrderByDescending(f => f.CreatedDate)
                 .ToListAsync();
 
-            return View(fines);
+            // الـ Overdue Active/ReturnRequested loans (ما فيهاش Fine record بعد)
+            var overdueLoans = await context.Loans
+                .Include(l => l.BookCopy).ThenInclude(bc => bc.Book)
+                .Include(l => l.Member)
+                .Where(l => (l.Status == LoanStatus.Active || l.Status == LoanStatus.ReturnRequested) &&
+                            l.DueDate.HasValue &&
+                            l.DueDate.Value.Date < DateTime.Now.Date &&
+                            !context.Fines.Any(f => f.LoanId == l.Id))
+                .OrderByDescending(l => l.DueDate)
+                .ToListAsync();
+
+            ViewBag.SavedFines = savedFines;
+            ViewBag.OverdueLoans = overdueLoans;
+
+            return View();
         }
 
         [Authorize(Roles = "Librarian,Admin")]
@@ -355,7 +387,7 @@ namespace ITI_Project.Controllers
                     .Where(f => !f.IsPaid && f.Loan!.MemberId == member.Id)
                     .SumAsync(f => (decimal?)f.Amount) ?? 0m;
 
-                if (unpaidTotal <= BlockThreshold)
+                if (unpaidTotal < BlockThreshold)
                 {
                     member.IsBlocked = false;
                     await context.SaveChangesAsync();

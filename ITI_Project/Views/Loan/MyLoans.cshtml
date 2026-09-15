@@ -48,13 +48,30 @@
                 <td>@loan.Status</td>
                 <td>@(loan.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
                 <td>
-                    @if (loan.Fines != null)
-                    {
-                        @($"{loan.Fines.Amount:0.00} EGP" + (loan.Fines.IsPaid ? " (Paid)" : " (Unpaid)"))
-                    }
-                    else
-                    {
-                        @:-
+                    @{
+                        decimal fineAmount = 0;
+
+                        // لو Fine record موجود واتدفعت، اعرض المبلغ المدفوع
+                        if (loan.Fines != null)
+                        {
+                            fineAmount = loan.Fines.Amount;
+                            <text>@fineAmount.ToString("0.00") EGP @(loan.Fines.IsPaid ? "(Paid)" : "(Unpaid)")</text>
+                        }
+                        // لو الكتاب لسه متأخر (Active أو ReturnRequested)، احسبها ديناميكي
+                        else if ((loan.Status == ITI_Project.Model.LoanStatus.Active ||
+                                 loan.Status == ITI_Project.Model.LoanStatus.ReturnRequested) &&
+                                 loan.DueDate.HasValue &&
+                                 DateTime.Now.Date > loan.DueDate.Value.Date)
+                        {
+                            var daysLate = (DateTime.Now.Date - loan.DueDate.Value.Date).Days;
+                            fineAmount = daysLate * 5; // 5 جنيه/يوم
+                                                       <text>@fineAmount.ToString("0.00") EGP (Current)</text>
+                        }
+                        // لو ما في غرامة
+                        else if (fineAmount == 0)
+                        {
+                            <text>-</text>
+                        }
                     }
                 </td>
                 <td>

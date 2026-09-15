@@ -57,22 +57,58 @@ namespace ITI_Project.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int id)
+        [Authorize(Roles = "Admin,Librarian")]
+        public async Task<IActionResult> Details(int id, int loansPage = 1, int reservationsPage = 1)
         {
+            const int pageSize = 5;
+
             var member = await context.Members.FindAsync(id);
             if (member == null) return NotFound();
 
-            var loans = await context.Loans
-                .Include(l => l.BookCopy)
-                    .ThenInclude(bc => bc.Book)
+            // Loans with paging
+            var loansQuery = context.Loans
+                .Include(l => l.BookCopy).ThenInclude(bc => bc.Book)
                 .Include(l => l.Fines)
                 .Where(l => l.MemberId == id)
-                .OrderByDescending(l => l.BorrowDate)
+                .OrderByDescending(l => l.RequestDate);
+
+            var totalLoans = await loansQuery.CountAsync();
+            var totalLoansPages = (int)Math.Ceiling(totalLoans / (double)pageSize);
+            if (loansPage < 1) loansPage = 1;
+            if (totalLoansPages > 0 && loansPage > totalLoansPages) loansPage = totalLoansPages;
+
+            var loans = await loansQuery
+                .Skip((loansPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Reservations with paging
+            var reservationsQuery = context.Reservations
+                .Include(r => r.Book)
+                .Where(r => r.MemberId == id)
+                .OrderByDescending(r => r.ReservationDate);
+
+            var totalReservations = await reservationsQuery.CountAsync();
+            var totalReservationsPages = (int)Math.Ceiling(totalReservations / (double)pageSize);
+            if (reservationsPage < 1) reservationsPage = 1;
+            if (totalReservationsPages > 0 && reservationsPage > totalReservationsPages)
+                reservationsPage = totalReservationsPages;
+
+            var reservations = await reservationsQuery
+                .Skip((reservationsPage - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             ViewBag.Member = member;
-            return View(loans);
+            ViewBag.Loans = loans;
+            ViewBag.Reservations = reservations;
+            ViewBag.LoansPage = loansPage;
+            ViewBag.TotalLoansPages = totalLoansPages;
+            ViewBag.ReservationsPage = reservationsPage;
+            ViewBag.TotalReservationsPages = totalReservationsPages;
+
+            return View();
         }
-     
+
     }
 }

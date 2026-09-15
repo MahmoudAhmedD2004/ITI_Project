@@ -243,6 +243,32 @@ namespace ITI_Project.Controllers
             await context.SaveChangesAsync();
             return RedirectToAction("PendingReturns");
         }
+        [Authorize(Roles = "Librarian,Admin")]
+        public async Task<IActionResult> AllLoans(int page = 1)
+        {
+            const int pageSize = 10;
+            if (page < 1) page = 1;
+
+            var query = context.Loans
+                .Include(l => l.BookCopy).ThenInclude(bc => bc.Book)
+                .Include(l => l.Member)
+                .Include(l => l.Fines)
+                .OrderByDescending(l => l.RequestDate);
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            if (totalPages > 0 && page > totalPages) page = totalPages;
+
+            var loans = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(loans);
+        }
 
         [HttpPost]
         public async Task<IActionResult> CancelBorrowRequest(int loanId)

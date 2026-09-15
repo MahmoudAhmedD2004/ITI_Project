@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Member Details";
+    Layout = "_MyLayout";
+    var member = ViewBag.Member as ITI_Project.Model.Member;
+    var loans = ViewBag.Loans as List<ITI_Project.Model.Loan> ?? new();
+    var reservations = ViewBag.Reservations as List<ITI_Project.Model.Reservation> ?? new();
+    int loansPage = ViewBag.LoansPage ?? 1;
+    int totalLoansPages = ViewBag.TotalLoansPages ?? 1;
+    int reservationsPage = ViewBag.ReservationsPage ?? 1;
+    int totalReservationsPages = ViewBag.TotalReservationsPages ?? 1;
+}
+
+<h2>@member?.UserName</h2>
+<p><strong>Email:</strong> @member?.Email</p>
+<p><strong>Phone:</strong> @member?.PhoneNumber</p>
+<p><strong>Membership:</strong> @member?.MembershipStartDate.ToString("yyyy-MM-dd") to @member?.MembershipExpiryDate.ToString("yyyy-MM-dd")</p>
+@if (member?.IsBlocked == true)
+{
+    <span class="badge bg-danger">Blocked</span>
+}
+
+<h3 style="margin-top: 24px;">Loan History</h3>
+@if (loans.Any())
+{
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Status</th>
+                <th>Requested</th>
+                <th>Due Date</th>
+                <th>Returned</th>
+                <th>Fine</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loan in loans)
+            {
+                <tr>
+                    <td>@loan.BookCopy?.Book?.Title</td>
+                    <td>@loan.Status</td>
+                    <td>@loan.RequestDate.ToString("yyyy-MM-dd")</td>
+                    <td>@(loan.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                    <td>@(loan.ReturnDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                    <td>
+                        @if (loan.Fines != null)
+                        {
+                            @($"{loan.Fines.Amount:0.00} EGP " + (loan.Fines.IsPaid ? "(Paid)" : "(Unpaid)"))
+                        }
+                        else
+                        {
+                            @:-
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (totalLoansPages > 1)
+    {
+        <nav style="display:flex; gap:4px; margin-top:12px;">
+            @for (int p = 1; p <= totalLoansPages; p++)
+            {
+                <a asp-action="Details" asp-route-id="@member.Id" asp-route-loansPage="@p"
+                   class="btn btn-sm @(p == loansPage ? "btn-oak" : "btn-ghost")">
+                    @p
+                </a>
+            }
+        </nav>
+    }
+}
+else
+{
+    <p class="text-muted">No loans yet.</p>
+}
+
+<h3 style="margin-top: 24px;">Reservations</h3>
+@if (reservations.Any())
+{
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Reserved</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var res in reservations)
+            {
+                <tr>
+                    <td>@res.Book?.Title</td>
+                    <td>@res.ReservationDate.ToString("yyyy-MM-dd")</td>
+                    <td>@res.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (totalReservationsPages > 1)
+    {
+        <nav style="display:flex; gap:4px; margin-top:12px;">
+            @for (int p = 1; p <= totalReservationsPages; p++)
+            {
+                <a asp-action="Details" asp-route-id="@member.Id" asp-route-reservationsPage="@p"
+                   class="btn btn-sm @(p == reservationsPage ? "btn-oak" : "btn-ghost")">
+                    @p
+                </a>
+            }
+        </nav>
+    }
+}
+else
+{
+    <p class="text-muted">No reservations.</p>
+}
+
+<a asp-action="Index" class="btn btn-link">Back to Members</a>

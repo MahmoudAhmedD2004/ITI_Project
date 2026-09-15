@@ -11,8 +11,11 @@ namespace ITI_Project.Controllers
     {
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
+            const int pageSize = 10;
+            if (page < 1) page = 1;
+
             var query = context.Reservations
                 .Include(r => r.Book)
                 .Include(r => r.Member)
@@ -29,8 +32,14 @@ namespace ITI_Project.Controllers
                 query = query.Where(r => r.MemberId == member.Id);
             }
 
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            if (totalPages > 0 && page > totalPages) page = totalPages;
+
             var reservations = await query
                 .OrderBy(r => r.ReservationDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
             var reservationList = reservations.Select(r => new ReservationViewModel
@@ -46,6 +55,9 @@ namespace ITI_Project.Controllers
                     other.Status == "Pending" &&
                     other.ReservationDate <= r.ReservationDate)
             }).ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
 
             return View(reservationList);
         }

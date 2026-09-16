@@ -76,11 +76,14 @@
         </a>
     }
         }
-        <a class="nav-item" data-page="reservations" asp-controller="Reservations" asp-action="Index">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21 12 16.5 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-            Reservations
-        </a>
-        @if (User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Librarian") || User.IsInRole("Admin")))
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <a class="nav-item" data-page="reservations" asp-controller="Reservations" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21 12 16.5 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                        Reservations
+                    </a>
+                }
+                @if (User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Librarian") || User.IsInRole("Admin")))
         {
             <a class="nav-item" asp-controller="Loan" asp-action="AllFines">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 9.5c0-1.4 1.1-2.3 2.5-2.3s2.5.8 2.5 2c0 2.5-5 1.6-5 4.1 0 1.2 1.1 2.2 2.5 2.2s2.5-.9 2.5-2.3" /></svg>

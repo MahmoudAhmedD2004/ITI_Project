@@ -34,6 +34,10 @@
             <div class="meta-val">@Model.MembershipExpiryDate.ToString("dd MMM yyyy")</div>
         </div>
     </div>
+    <div style="margin-top:28px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a asp-action="EditProfile" class="btn btn-oak">Edit Profile</a>
+        <a asp-action="ChangePassword" class="btn btn-ghost">Change Password</a>
+    </div>
 
     <form asp-controller="Member" asp-action="Logout" method="post" style="margin-top:28px;">
         <button type="submit" class="btn btn-ghost">Log out</button>

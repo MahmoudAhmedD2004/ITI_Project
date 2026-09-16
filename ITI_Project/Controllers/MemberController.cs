@@ -53,6 +53,85 @@ namespace ITI_Project.Controllers
             return View(member);
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> EditProfile()
+        {
+            var member = await context.Members
+                .FirstOrDefaultAsync(m => m.UserName == User.Identity!.Name);
+
+            if (member == null) return RedirectToAction("Index");
+
+            var model = new EditProfileViewModel
+            {
+                Email = member.Email,
+                PhoneNumber = member.PhoneNumber
+            };
+
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> EditProfile(EditProfileViewModel model)
+        {
+            var member = await context.Members
+                .FirstOrDefaultAsync(m => m.UserName == User.Identity!.Name);
+
+            if (member == null) return RedirectToAction("Index");
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var emailTaken = await context.Members
+                .AnyAsync(m => m.Email == model.Email && m.Id != member.Id);
+
+            if (emailTaken)
+            {
+                ModelState.AddModelError(nameof(model.Email), "This email is already registered to another account.");
+                return View(model);
+            }
+
+            member.Email = model.Email;
+            member.PhoneNumber = model.PhoneNumber;
+            await context.SaveChangesAsync();
+
+            TempData["Success"] = "Your profile has been updated.";
+            return RedirectToAction("Profile");
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            var member = await context.Members
+                .FirstOrDefaultAsync(m => m.UserName == User.Identity!.Name);
+
+            if (member == null) return RedirectToAction("Index");
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            if (member.PasswordHash != model.CurrentPassword)
+            {
+                TempData["Error"] = "Your current password is incorrect.";
+                return View(model);
+            }
+
+            member.PasswordHash = model.NewPassword;
+            await context.SaveChangesAsync();
+
+            TempData["Success"] = "Your password has been changed.";
+            return RedirectToAction("Profile");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

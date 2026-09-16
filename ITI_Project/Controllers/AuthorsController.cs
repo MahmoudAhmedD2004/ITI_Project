@@ -12,25 +12,41 @@ namespace ITI_Project.Controllers
     public class AuthorsController(AppDbContext context) : Controller
     {
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(string? q, string sortBy = "name_asc", int page = 1)
         {
             const int pageSize = 10;
             if (page < 1) page = 1;
 
             var query = context.Authors.Include(a => a.Books).AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(a =>
+                    a.Name.Contains(q) ||
+                    (a.Bio != null && a.Bio.Contains(q)));
+            }
+
+            query = sortBy switch
+            {
+                "name_desc" => query.OrderByDescending(a => a.Name),
+                "books_desc" => query.OrderByDescending(a => a.Books.Count),
+                "books_asc" => query.OrderBy(a => a.Books.Count),
+                _ => query.OrderBy(a => a.Name),
+            };
+
             var totalCount = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
             if (totalPages > 0 && page > totalPages) page = totalPages;
 
             var authors = await query
-                .OrderBy(a => a.Name)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
+            ViewBag.Search = q;
+            ViewBag.SortBy = sortBy;
 
             return View(authors);
         }

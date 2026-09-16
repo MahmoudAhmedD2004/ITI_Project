@@ -12,6 +12,24 @@
     </div>
 </div>
 
+<form asp-action="Index" method="get" class="filters-bar">
+    <div class="filter-group" style="flex:1; min-width:220px;">
+        <label>Search</label>
+        <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by name or description..." class="form-control" />
+    </div>
+    <div class="filter-group sort-group">
+        <label>Sort by</label>
+        <select name="sortBy" onchange="this.form.submit()">
+            <option value="name_asc" selected="@(ViewBag.SortBy == "name_asc")">Name (A-Z)</option>
+            <option value="name_desc" selected="@(ViewBag.SortBy == "name_desc")">Name (Z-A)</option>
+            <option value="books_desc" selected="@(ViewBag.SortBy == "books_desc")">Most books</option>
+            <option value="books_asc" selected="@(ViewBag.SortBy == "books_asc")">Fewest books</option>
+        </select>
+        <button type="submit" class="btn btn-oak btn-sm">Apply</button>
+        <a asp-action="Index" class="btn btn-ghost btn-sm">Reset</a>
+    </div>
+</form>
+
 <div class="card card-body border-0 shadow table-wrapper table-responsive">
     <table class="table table-hover align-items-center">
         <thead>
@@ -50,6 +68,8 @@
             {
                 <a asp-action="Index"
                    asp-route-page="@p"
+                   asp-route-q="@ViewBag.Search"
+                   asp-route-sortBy="@ViewBag.SortBy"
                    class="btn btn-sm @(p == (int)ViewBag.CurrentPage ? "btn-oak" : "btn-ghost")">
                     @p
                 </a>

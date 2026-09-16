@@ -11,12 +11,30 @@ namespace ITI_Project.Controllers
     {
         [HttpGet]
         [Authorize(Roles = "Admin,Librarian")]
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(string? q, Role? role, bool? blocked, string sortBy = "name_asc", int page = 1)
         {
             const int pageSize = 10;
             if (page < 1) page = 1;
 
-            var query = context.Members
+            var membersQuery = context.Members.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                membersQuery = membersQuery.Where(m =>
+                    m.UserName.Contains(q) || m.Email.Contains(q));
+            }
+
+            if (role != null)
+            {
+                membersQuery = membersQuery.Where(m => m.Role == role);
+            }
+
+            if (blocked != null)
+            {
+                membersQuery = membersQuery.Where(m => m.IsBlocked == blocked);
+            }
+
+            var query = membersQuery
                 .Select(m => new MemberViewModel
                 {
                     Id = m.Id,
@@ -30,6 +48,15 @@ namespace ITI_Project.Controllers
                     TotalUnpaidFines = context.Fines.Where(f => f.Loan.MemberId == m.Id && !f.IsPaid).Sum(f => f.Amount)
                 });
 
+            query = sortBy switch
+            {
+                "name_desc" => query.OrderByDescending(m => m.UserName),
+                "expiry_asc" => query.OrderBy(m => m.MembershipExpiryDate),
+                "expiry_desc" => query.OrderByDescending(m => m.MembershipExpiryDate),
+                "loans_desc" => query.OrderByDescending(m => m.ActiveLoansCount),
+                _ => query.OrderBy(m => m.UserName),
+            };
+
             var totalCount = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
             if (totalPages > 0 && page > totalPages) page = totalPages;
@@ -41,6 +68,10 @@ namespace ITI_Project.Controllers
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
+            ViewBag.Search = q;
+            ViewBag.RoleFilter = role;
+            ViewBag.BlockedFilter = blocked;
+            ViewBag.SortBy = sortBy;
 
             return View(members);
         }

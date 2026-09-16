@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITI_Project.Controllers
 {
-    public class ReservationsController (AppDbContext context) : Controller
+    public class ReservationsController(AppDbContext context) : Controller
     {
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(string? q, string? status, string sortBy = "date_desc", int page = 1)
         {
             const int pageSize = 10;
             if (page < 1) page = 1;
@@ -32,12 +32,30 @@ namespace ITI_Project.Controllers
                 query = query.Where(r => r.MemberId == member.Id);
             }
 
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(r =>
+                    (r.Book != null && r.Book.Title.Contains(q)) ||
+                    (r.Member != null && r.Member.UserName.Contains(q)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                query = query.Where(r => r.Status == status);
+            }
+
+            query = sortBy switch
+            {
+                "date_asc" => query.OrderBy(r => r.ReservationDate),
+                "date_desc" => query.OrderByDescending(r => r.ReservationDate),
+                _ => query.OrderByDescending(r => r.ReservationDate),
+            };
+
             var totalCount = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
             if (totalPages > 0 && page > totalPages) page = totalPages;
 
             var reservations = await query
-                .OrderBy(r => r.ReservationDate)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -58,6 +76,9 @@ namespace ITI_Project.Controllers
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
+            ViewBag.Search = q;
+            ViewBag.StatusFilter = status;
+            ViewBag.SortBy = sortBy;
 
             return View(reservationList);
         }

@@ -6,6 +6,22 @@
 
 <h2>Pending Returns</h2>
 
+<form asp-action="PendingReturns" method="get" class="filters-bar">
+    <div class="filter-group" style="flex:1; min-width:220px;">
+        <label>Search</label>
+        <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by member or book..." class="form-control" />
+    </div>
+    <div class="filter-group sort-group">
+        <label>Sort by</label>
+        <select name="sortBy" onchange="this.form.submit()">
+            <option value="due_asc" selected="@(ViewBag.SortBy == "due_asc")">Due date (earliest)</option>
+            <option value="due_desc" selected="@(ViewBag.SortBy == "due_desc")">Due date (latest)</option>
+        </select>
+        <button type="submit" class="btn btn-oak btn-sm">Apply</button>
+        <a asp-action="PendingReturns" class="btn btn-ghost btn-sm">Reset</a>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>

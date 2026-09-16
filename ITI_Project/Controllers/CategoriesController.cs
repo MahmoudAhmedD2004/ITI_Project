@@ -9,25 +9,41 @@ namespace ITI_Project.Controllers
 {
     public class CategoriesController(AppDbContext context) : Controller
     {
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(string? q, string sortBy = "name_asc", int page = 1)
         {
             const int pageSize = 10;
             if (page < 1) page = 1;
 
             var query = context.Categories.Include(c => c.Books).AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(c =>
+                    c.Name.Contains(q) ||
+                    (c.Description != null && c.Description.Contains(q)));
+            }
+
+            query = sortBy switch
+            {
+                "name_desc" => query.OrderByDescending(c => c.Name),
+                "books_desc" => query.OrderByDescending(c => c.Books.Count),
+                "books_asc" => query.OrderBy(c => c.Books.Count),
+                _ => query.OrderBy(c => c.Name),
+            };
+
             var totalCount = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
             if (totalPages > 0 && page > totalPages) page = totalPages;
 
             var categories = await query
-                .OrderBy(c => c.Name)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
+            ViewBag.Search = q;
+            ViewBag.SortBy = sortBy;
 
             return View(categories);
         }

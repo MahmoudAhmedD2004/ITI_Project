@@ -6,6 +6,34 @@
 
 <h2>All Loans</h2>
 
+<form asp-action="AllLoans" method="get" class="filters-bar">
+    <div class="filter-group" style="flex:1; min-width:220px;">
+        <label>Search</label>
+        <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by member or book..." class="form-control" />
+    </div>
+    <div class="filter-group">
+        <label>Status</label>
+        <select name="status" onchange="this.form.submit()">
+            <option value="">All statuses</option>
+            @foreach (var s in Enum.GetValues(typeof(ITI_Project.Model.LoanStatus)))
+            {
+                <option value="@s" selected="@(ViewBag.StatusFilter?.ToString() == s.ToString())">@s</option>
+            }
+        </select>
+    </div>
+    <div class="filter-group sort-group">
+        <label>Sort by</label>
+        <select name="sortBy" onchange="this.form.submit()">
+            <option value="date_desc" selected="@(ViewBag.SortBy == "date_desc")">Requested (newest)</option>
+            <option value="date_asc" selected="@(ViewBag.SortBy == "date_asc")">Requested (oldest)</option>
+            <option value="due_desc" selected="@(ViewBag.SortBy == "due_desc")">Due date (latest)</option>
+            <option value="due_asc" selected="@(ViewBag.SortBy == "due_asc")">Due date (earliest)</option>
+        </select>
+        <button type="submit" class="btn btn-oak btn-sm">Apply</button>
+        <a asp-action="AllLoans" class="btn btn-ghost btn-sm">Reset</a>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -63,6 +91,9 @@
         @for (int p = 1; p <= (int)ViewBag.TotalPages; p++)
         {
             <a asp-action="AllLoans" asp-route-page="@p"
+               asp-route-q="@ViewBag.Search"
+               asp-route-status="@ViewBag.StatusFilter"
+               asp-route-sortBy="@ViewBag.SortBy"
                class="btn btn-sm @(p == (int)ViewBag.CurrentPage ? "btn-oak" : "btn-ghost")">
                 @p
             </a>

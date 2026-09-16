@@ -86,17 +86,41 @@ namespace ITI_Project.Controllers
             TempData["Success"] = "Your borrow request has been sent.";
             return RedirectToAction("MyLoans");
         }
-        public async Task<IActionResult> MyLoans()
+        public async Task<IActionResult> MyLoans(string? q, LoanStatus? status, string sortBy = "date_desc")
         {
             var member = await GetCurrentMemberAsync();
             if (member == null) return RedirectToAction("Index", "Member");
 
-            var loans = await context.Loans
+            var query = context.Loans
                 .Include(l => l.BookCopy).ThenInclude(bc => bc!.Book)
                 .Include(l => l.Fines)
                 .Where(l => l.MemberId == member.Id)
-                .OrderByDescending(l => l.RequestDate)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(l => l.BookCopy != null && l.BookCopy.Book != null && l.BookCopy.Book.Title.Contains(q));
+            }
+
+            if (status != null)
+            {
+                query = query.Where(l => l.Status == status);
+            }
+
+            query = sortBy switch
+            {
+                "date_asc" => query.OrderBy(l => l.RequestDate),
+                "date_desc" => query.OrderByDescending(l => l.RequestDate),
+                "due_asc" => query.OrderBy(l => l.DueDate),
+                "due_desc" => query.OrderByDescending(l => l.DueDate),
+                _ => query.OrderByDescending(l => l.RequestDate),
+            };
+
+            var loans = await query.ToListAsync();
+
+            ViewBag.Search = q;
+            ViewBag.StatusFilter = status;
+            ViewBag.SortBy = sortBy;
 
             return View(loans);
         }
@@ -126,41 +150,84 @@ namespace ITI_Project.Controllers
         // ---------- Staff actions (Librarian / Admin) ----------
 
         [Authorize(Roles = "Librarian,Admin")]
-        public async Task<IActionResult> AllLoans(int page = 1)
+        public async Task<IActionResult> AllLoans(string? q, LoanStatus? status, string sortBy = "date_desc", int page = 1)
         {
             int pageSize = 10; // Number of loans per page
 
-            var totalLoans = await context.Loans.CountAsync();
+            var query = context.Loans
+                .Include(l => l.BookCopy).ThenInclude(bc => bc!.Book)
+                .Include(l => l.Member)
+                .Include(l => l.Fines)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(l =>
+                    (l.Member != null && l.Member.UserName.Contains(q)) ||
+                    (l.BookCopy != null && l.BookCopy.Book != null && l.BookCopy.Book.Title.Contains(q)));
+            }
+
+            if (status != null)
+            {
+                query = query.Where(l => l.Status == status);
+            }
+
+            query = sortBy switch
+            {
+                "date_asc" => query.OrderBy(l => l.RequestDate),
+                "date_desc" => query.OrderByDescending(l => l.RequestDate),
+                "due_asc" => query.OrderBy(l => l.DueDate),
+                "due_desc" => query.OrderByDescending(l => l.DueDate),
+                _ => query.OrderByDescending(l => l.RequestDate),
+            };
+
+            var totalLoans = await query.CountAsync();
             int totalPages = (int)Math.Ceiling(totalLoans / (double)pageSize);
 
             // Ensure page is within valid range
             if (page < 1) page = 1;
             if (page > totalPages && totalPages > 0) page = totalPages;
 
-            var loans = await context.Loans
-                .Include(l => l.BookCopy).ThenInclude(bc => bc!.Book)
-                .Include(l => l.Member)
-                .Include(l => l.Fines)
-                .OrderByDescending(l => l.RequestDate)
+            var loans = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
+            ViewBag.Search = q;
+            ViewBag.StatusFilter = status;
+            ViewBag.SortBy = sortBy;
 
             return View(loans);
         }
 
         [Authorize(Roles = "Librarian,Admin")]
-        public async Task<IActionResult> PendingRequests()
+        public async Task<IActionResult> PendingRequests(string? q, string sortBy = "date_asc")
         {
-            var loans = await context.Loans
+            var query = context.Loans
                 .Include(l => l.BookCopy).ThenInclude(bc => bc!.Book)
                 .Include(l => l.Member)
                 .Where(l => l.Status == LoanStatus.Requested)
-                .OrderBy(l => l.RequestDate)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(l =>
+                    (l.Member != null && l.Member.UserName.Contains(q)) ||
+                    (l.BookCopy != null && l.BookCopy.Book != null && l.BookCopy.Book.Title.Contains(q)));
+            }
+
+            query = sortBy switch
+            {
+                "date_desc" => query.OrderByDescending(l => l.RequestDate),
+                _ => query.OrderBy(l => l.RequestDate),
+            };
+
+            var loans = await query.ToListAsync();
+
+            ViewBag.Search = q;
+            ViewBag.SortBy = sortBy;
 
             return View(loans);
         }
@@ -213,14 +280,31 @@ namespace ITI_Project.Controllers
         }
 
         [Authorize(Roles = "Librarian,Admin")]
-        public async Task<IActionResult> PendingReturns()
+        public async Task<IActionResult> PendingReturns(string? q, string sortBy = "due_asc")
         {
-            var loans = await context.Loans
+            var query = context.Loans
                 .Include(l => l.BookCopy).ThenInclude(bc => bc!.Book)
                 .Include(l => l.Member)
                 .Where(l => l.Status == LoanStatus.ReturnRequested)
-                .OrderBy(l => l.DueDate)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(l =>
+                    (l.Member != null && l.Member.UserName.Contains(q)) ||
+                    (l.BookCopy != null && l.BookCopy.Book != null && l.BookCopy.Book.Title.Contains(q)));
+            }
+
+            query = sortBy switch
+            {
+                "due_desc" => query.OrderByDescending(l => l.DueDate),
+                _ => query.OrderBy(l => l.DueDate),
+            };
+
+            var loans = await query.ToListAsync();
+
+            ViewBag.Search = q;
+            ViewBag.SortBy = sortBy;
 
             return View(loans);
         }
@@ -335,28 +419,69 @@ namespace ITI_Project.Controllers
         }
 
         [Authorize(Roles = "Librarian,Admin")]
-        public async Task<IActionResult> AllFines()
+        public async Task<IActionResult> AllFines(string? q, bool? paid, string sortBy = "date_desc")
         {
             // Saved fines (already paid or still unpaid)
-            var savedFines = await context.Fines
+            var savedFinesQuery = context.Fines
                 .Include(f => f.Loan).ThenInclude(l => l!.Member)
                 .Include(f => f.Loan).ThenInclude(l => l!.BookCopy).ThenInclude(bc => bc!.Book)
-                .OrderByDescending(f => f.CreatedDate)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                savedFinesQuery = savedFinesQuery.Where(f =>
+                    (f.Loan != null && f.Loan.Member != null && f.Loan.Member.UserName.Contains(q)) ||
+                    (f.Loan != null && f.Loan.BookCopy != null && f.Loan.BookCopy.Book != null && f.Loan.BookCopy.Book.Title.Contains(q)));
+            }
+
+            if (paid != null)
+            {
+                savedFinesQuery = savedFinesQuery.Where(f => f.IsPaid == paid);
+            }
+
+            savedFinesQuery = sortBy switch
+            {
+                "date_asc" => savedFinesQuery.OrderBy(f => f.CreatedDate),
+                "amount_desc" => savedFinesQuery.OrderByDescending(f => f.Amount),
+                "amount_asc" => savedFinesQuery.OrderBy(f => f.Amount),
+                _ => savedFinesQuery.OrderByDescending(f => f.CreatedDate),
+            };
+
+            var savedFines = await savedFinesQuery.ToListAsync();
 
             // Overdue Active/ReturnRequested loans that don't have a Fine record yet
-            var overdueLoans = await context.Loans
+            var overdueLoansQuery = context.Loans
                 .Include(l => l.BookCopy).ThenInclude(bc => bc.Book)
                 .Include(l => l.Member)
                 .Where(l => (l.Status == LoanStatus.Active || l.Status == LoanStatus.ReturnRequested) &&
                             l.DueDate.HasValue &&
                             l.DueDate.Value.Date < DateTime.Now.Date &&
                             !context.Fines.Any(f => f.LoanId == l.Id))
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                overdueLoansQuery = overdueLoansQuery.Where(l =>
+                    (l.Member != null && l.Member.UserName.Contains(q)) ||
+                    (l.BookCopy != null && l.BookCopy.Book != null && l.BookCopy.Book.Title.Contains(q)));
+            }
+
+            // The "paid" filter only applies to recorded fines; overdue-without-fine loans
+            // are inherently unpaid, so hide them when the "Paid" filter is selected.
+            if (paid == true)
+            {
+                overdueLoansQuery = overdueLoansQuery.Where(l => false);
+            }
+
+            var overdueLoans = await overdueLoansQuery
                 .OrderByDescending(l => l.DueDate)
                 .ToListAsync();
 
             ViewBag.SavedFines = savedFines;
             ViewBag.OverdueLoans = overdueLoans;
+            ViewBag.Search = q;
+            ViewBag.PaidFilter = paid;
+            ViewBag.SortBy = sortBy;
 
             return View();
         }

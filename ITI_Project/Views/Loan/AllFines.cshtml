@@ -7,6 +7,33 @@
 
 <h2>All Fines</h2>
 
+<form asp-action="AllFines" method="get" class="filters-bar">
+    <div class="filter-group" style="flex:1; min-width:220px;">
+        <label>Search</label>
+        <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by member or book..." class="form-control" />
+    </div>
+    <div class="filter-group">
+        <label>Status</label>
+        <select name="paid" onchange="this.form.submit()">
+            <option value="">All</option>
+            <option value="false" selected="@(ViewBag.PaidFilter == false)">Unpaid</option>
+            <option value="true" selected="@(ViewBag.PaidFilter == true)">Paid</option>
+        </select>
+    </div>
+    <div class="filter-group sort-group">
+        <label>Sort by</label>
+        <select name="sortBy" onchange="this.form.submit()">
+            <option value="date_desc" selected="@(ViewBag.SortBy == "date_desc")">Newest first</option>
+            <option value="date_asc" selected="@(ViewBag.SortBy == "date_asc")">Oldest first</option>
+            <option value="amount_desc" selected="@(ViewBag.SortBy == "amount_desc")">Amount (highest)</option>
+            <option value="amount_asc" selected="@(ViewBag.SortBy == "amount_asc")">Amount (lowest)</option>
+        </select>
+        <button type="submit" class="btn btn-oak btn-sm">Apply</button>
+        <a asp-action="AllFines" class="btn btn-ghost btn-sm">Reset</a>
+    </div>
+</form>
+<p class="text-muted" style="margin-top:-8px;">Filters apply to the recorded fines table below. Overdue loans without a recorded fine are always shown above unless "Paid" is selected.</p>
+
 <h3 style="margin-top: 24px;">Calculated (Not Yet Settled)</h3>
 <p class="text-muted">These are active loans that are overdue. Fines are automatically recorded when the book is returned.</p>
 

@@ -30,6 +30,34 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
+<form asp-action="MyLoans" method="get" class="filters-bar">
+    <div class="filter-group" style="flex:1; min-width:220px;">
+        <label>Search</label>
+        <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by book title..." class="form-control" />
+    </div>
+    <div class="filter-group">
+        <label>Status</label>
+        <select name="status" onchange="this.form.submit()">
+            <option value="">All statuses</option>
+            @foreach (var s in Enum.GetValues(typeof(ITI_Project.Model.LoanStatus)))
+            {
+                <option value="@s" selected="@(ViewBag.StatusFilter?.ToString() == s.ToString())">@s</option>
+            }
+        </select>
+    </div>
+    <div class="filter-group sort-group">
+        <label>Sort by</label>
+        <select name="sortBy" onchange="this.form.submit()">
+            <option value="date_desc" selected="@(ViewBag.SortBy == "date_desc")">Requested (newest)</option>
+            <option value="date_asc" selected="@(ViewBag.SortBy == "date_asc")">Requested (oldest)</option>
+            <option value="due_desc" selected="@(ViewBag.SortBy == "due_desc")">Due date (latest)</option>
+            <option value="due_asc" selected="@(ViewBag.SortBy == "due_asc")">Due date (earliest)</option>
+        </select>
+        <button type="submit" class="btn btn-oak btn-sm">Apply</button>
+        <a asp-action="MyLoans" class="btn btn-ghost btn-sm">Reset</a>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>

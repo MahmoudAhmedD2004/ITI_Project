@@ -12,6 +12,42 @@
     }
 </div>
 
+<form asp-action="Index" method="get" class="filters-bar">
+    <div class="filter-group" style="flex:1; min-width:220px;">
+        <label>Search</label>
+        <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by username or email..." class="form-control" />
+    </div>
+    <div class="filter-group">
+        <label>Role</label>
+        <select name="role" onchange="this.form.submit()">
+            <option value="">All roles</option>
+            <option value="Member" selected="@(ViewBag.RoleFilter?.ToString() == "Member")">Member</option>
+            <option value="Librarian" selected="@(ViewBag.RoleFilter?.ToString() == "Librarian")">Librarian</option>
+            <option value="Admin" selected="@(ViewBag.RoleFilter?.ToString() == "Admin")">Admin</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>Status</label>
+        <select name="blocked" onchange="this.form.submit()">
+            <option value="">All</option>
+            <option value="false" selected="@(ViewBag.BlockedFilter == false)">Active</option>
+            <option value="true" selected="@(ViewBag.BlockedFilter == true)">Blocked</option>
+        </select>
+    </div>
+    <div class="filter-group sort-group">
+        <label>Sort by</label>
+        <select name="sortBy" onchange="this.form.submit()">
+            <option value="name_asc" selected="@(ViewBag.SortBy == "name_asc")">Name (A-Z)</option>
+            <option value="name_desc" selected="@(ViewBag.SortBy == "name_desc")">Name (Z-A)</option>
+            <option value="expiry_asc" selected="@(ViewBag.SortBy == "expiry_asc")">Expiry (soonest)</option>
+            <option value="expiry_desc" selected="@(ViewBag.SortBy == "expiry_desc")">Expiry (latest)</option>
+            <option value="loans_desc" selected="@(ViewBag.SortBy == "loans_desc")">Most active loans</option>
+        </select>
+        <button type="submit" class="btn btn-oak btn-sm">Apply</button>
+        <a asp-action="Index" class="btn btn-ghost btn-sm">Reset</a>
+    </div>
+</form>
+
 <div class="card card-body border-0 shadow table-wrapper table-responsive">
     <table class="table table-hover align-items-center">
         <thead>
@@ -79,6 +115,10 @@
             {
                 <a asp-action="Index"
                    asp-route-page="@p"
+                   asp-route-q="@ViewBag.Search"
+                   asp-route-role="@ViewBag.RoleFilter"
+                   asp-route-blocked="@ViewBag.BlockedFilter"
+                   asp-route-sortBy="@ViewBag.SortBy"
                    class="btn btn-sm @(p == (int)ViewBag.CurrentPage ? "btn-oak" : "btn-ghost")">
                     @p
                 </a>

@@ -9,8 +9,10 @@
 <form asp-action="AllLoans" method="get" class="filters-bar">
     <div class="filter-group" style="flex:1; min-width:220px;">
         <label>Search</label>
-        <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by member or book..." class="form-control" />
-    </div>
+<div class="parent-input-box-search">
+            <i class="bi bi-search icon-box-search"></i>
+            <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by member or book..." class="input-box-search" />
+        </div>    </div>
     <div class="filter-group">
         <label>Status</label>
         <select name="status" onchange="this.form.submit()">

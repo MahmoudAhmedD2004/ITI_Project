@@ -221,3 +221,83 @@
         background-color: #c9a86a;
         color: #2b2118;
     }
+.parent-input-box-search{
+    display:flex;
+    align-items: center;
+}
+
+.input-box-search {
+    padding: 9px;
+    outline: none;
+    font-size: 14px;
+    border-radius: 0px 5px 5px 0px;
+    border: 1px solid #F1EAD9;
+    width: 100%;
+    border-left: none;
+    margin-left: 0px;
+}
+.icon-box-search {
+    background-color: #F1EAD9;
+    padding: 9px;
+    border: 1px solid #F1EAD9;
+    margin-right: 0px;
+    border-radius: 4px 0px 0px 4px;
+    border-bottom: none;
+    
+}
+.member-admin-add {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    align-items: center;
+}
+.view-loans-res {
+    background: rgb(162, 112, 63);
+    padding: 10px;
+    color: white;
+    font-weight: bold;
+    border-radius: 7px;
+}
+
+.edit-and-delete {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+.edit-member {
+    background-color: #bbb;
+    padding: 10px 20px;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+    margin-top: 20px;
+    border-radius: 7px;
+    
+}
+
+.block-member, .unblock-member {
+    box-sizing: border-box;
+    background-color: darkred;
+    width: 90px;
+    height: 35px;
+    border-radius: 7px;
+    outline: none;
+    font-size: 16px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.unblock-member {
+    background-color: green;
+}
+
+.delete-buttom {
+    background-color: darkred;
+    padding: 10px;
+    color: white;
+    font-weight: bold;
+    border-radius: 7px;
+    margin-right: 10px;
+}

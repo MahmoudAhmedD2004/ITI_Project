@@ -22,8 +22,15 @@
     <form asp-action="Index" method="get" class="filters-bar">
         <div class="filter-group" style="flex:1; min-width:220px;">
             <label>Search</label>
-            <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by name or bio..." class="form-control" />
+            <div class="parent-input-box-search">
+
+            <i class="bi bi-search icon-box-search"></i>
+            <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by name or bio..." class="input-box-search" />
+            </div>
         </div>
+
+        
+
         <div class="filter-group sort-group">
             <label>Sort by</label>
             <select name="sortBy" onchange="this.form.submit()">

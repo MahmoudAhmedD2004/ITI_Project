@@ -9,8 +9,10 @@
 <form asp-action="PendingReturns" method="get" class="filters-bar">
     <div class="filter-group" style="flex:1; min-width:220px;">
         <label>Search</label>
-        <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by member or book..." class="form-control" />
-    </div>
+<div class="parent-input-box-search">
+            <i class="bi bi-search icon-box-search"></i>
+            <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by member or book..." class="input-box-search" />
+        </div>    </div>
     <div class="filter-group sort-group">
         <label>Sort by</label>
         <select name="sortBy" onchange="this.form.submit()">

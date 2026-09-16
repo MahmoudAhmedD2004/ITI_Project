@@ -9,7 +9,10 @@
 <form asp-action="PendingRequests" method="get" class="filters-bar">
     <div class="filter-group" style="flex:1; min-width:220px;">
         <label>Search</label>
-        <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by member or book..." class="form-control" />
+    <div class="parent-input-box-search">
+            <i class="bi bi-search icon-box-search"></i>
+            <input type="text" name="q" value="@ViewBag.Search" placeholder="Search by member or book..." class="input-box-search" />
+        </div>
     </div>
     <div class="filter-group sort-group">
         <label>Sort by</label>
@@ -42,14 +45,21 @@
                     <div class="d-flex gap-2">
                         <form asp-action="Approve" asp-controller="Loan" method="post" class="d-flex gap-1">
                             <input type="hidden" name="loanId" value="@loan.Id" />
-                            <input type="number" name="days" value="14" min="1" class="form-control form-control-sm" style="width:70px" />
+                            <div class="parent-input-box-search">
+                                
+                                <input type="number" name="days" value="14" min="1"  class="input-box-search" />
                             <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                            </div>  
                         </form>
                         <form asp-action="Reject" asp-controller="Loan" method="post" class="d-flex gap-1"
                               onsubmit="return confirm('Reject this request?');">
                             <input type="hidden" name="loanId" value="@loan.Id" />
-                            <input type="text" name="reason" placeholder="Reason" class="form-control form-control-sm" required />
+                            <div class="parent-input-box-search">
+                               
+                                <input type="text" name="reason" value="@ViewBag.Search" placeholder="Reason" class="input-box-search" />
                             <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                            </div>  
+                            
                         </form>
                     </div>
                 </td>

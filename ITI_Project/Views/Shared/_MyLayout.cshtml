@@ -66,23 +66,23 @@
     </div>
 
     <div class="sidebar-foot">
-            @if (User.Identity!=null && User.Identity.IsAuthenticated)
-            {
-                <a asp-controller="Member" asp-action="Profile" class="nav-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M4 20c0-4 3.5-7 8-7s8 3 8 7" />
-                    </svg>
-                    @User.Identity.Name
-                </a>
-            }
-            else
-            {
-                <a class="nav-item" data-page="auth" asp-action="Index" asp-controller="Member">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
-                Sign in / Sign up
-                </a>
-            }
+        @if (User.Identity!=null && User.Identity.IsAuthenticated)
+        {
+            <a asp-controller="Member" asp-action="Profile" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c0-4 3.5-7 8-7s8 3 8 7" />
+                </svg>
+                @User.Identity.Name
+            </a>
+        }
+        else
+        {
+            <a class="nav-item" data-page="auth" asp-action="Index" asp-controller="Member">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+            Sign in / Sign up
+            </a>
+        }
     </div>
   </nav>
 

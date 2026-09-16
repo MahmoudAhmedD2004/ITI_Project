@@ -296,6 +296,7 @@ h1, h2, h3, .brand {
     display: flex;
     flex-direction: column;
     padding: 26px 0;
+    overflow-y: scroll;
 }
 
 .brand {

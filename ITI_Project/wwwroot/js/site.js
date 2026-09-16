@@ -8,6 +8,22 @@
 document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
     btn.addEventListener('click', () => showPage(btn.dataset.page));
 });
+document.querySelectorAll(".nav-item").forEach(link => {
+
+    link.addEventListener("click", function () {
+
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        this.classList.add("active");
+    });
+
+    // Set active based on current URL
+    if (link.href === window.location.href) {
+        link.classList.add("active");
+    }
+});
 
 function showAuthForm(which) {
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
@@ -77,3 +93,4 @@ document.getElementById('generateSummaryBtn').addEventListener('click', async fu
         spinner.classList.add('d-none');
     }
 });
+

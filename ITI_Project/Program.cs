@@ -2,6 +2,10 @@ using ITI_Project.Data;
 using ITI_Project.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.AI;
+using OpenAI;
+using System.ClientModel;
+
 
 namespace ITI_Project
 {
@@ -12,6 +16,38 @@ namespace ITI_Project
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            //Edit 
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+            });
+
+            var openAiClient = new OpenAIClient(
+                new ApiKeyCredential(
+                    builder.Configuration.GetSection("AI")["ApiKey"]!),
+
+                new OpenAIClientOptions { Endpoint = new Uri(builder.Configuration.GetSection("AI")["BaseUrl"]!) }
+                );
+
+            var chatClient = openAiClient.GetChatClient(builder.Configuration.GetSection("AI")["Model"]!);
+
+            builder.Services.AddSingleton(chatClient);
+
+            builder.Services.AddScoped<LibraryTool>();
+
+            builder.Services.AddSingleton<IChatClient>(
+                new ChatClientBuilder(chatClient.AsIChatClient()).UseFunctionInvocation().Build()
+                );
+
+            
+
+            // =================================
+
+
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("constr")));
@@ -39,6 +75,9 @@ namespace ITI_Project
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
+            // ?? «· ⁄œÌ· «·√”«”Ì:  ›⁄Ì· Session Middleware ﬁ»· Authentication Ê Authorization
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();

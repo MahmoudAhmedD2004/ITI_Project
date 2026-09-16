@@ -1,0 +1,273 @@
+﻿@model List<ITI_Project.Controllers.ChatController.ChatTurn>
+
+@{
+    ViewData["Title"] = "AI Library Agent";
+    var hasHistory = Model != null && Model.Any();
+}
+
+<div class="page-head">
+    <div>
+        <h1>🛠️ Agent — Folio Library</h1>
+        <p>Powered by AI tools. Every reply carries the database calls that produced it — open <em>"how it got there"</em> to inspect execution details.</p>
+    </div>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="chat-alert">@TempData["Error"]</div>
+}
+
+<div class="panel chat-panel">
+
+    <div class="chat-window" id="chatWindow">
+        @if (!hasHistory)
+        {
+            <div class="chat-empty">
+                <div class="chat-empty-icon">📚</div>
+                <p>Try asking:</p>
+                <div class="chat-suggestions">
+                    <button type="button" class="chip" data-text="Search for C# books">"Search for C# books"</button>
+                    <button type="button" class="chip" data-text="What are my active loans?">"What are my active loans?"</button>
+                    <button type="button" class="chip" data-text="Reserve Clean Code">"Reserve Clean Code"</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var message in Model)
+            {
+                if (message.Role == "user")
+                {
+                    <div class="chat-row chat-row-user">
+                        <div class="bubble bubble-user">@message.Text</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="chat-row chat-row-agent">
+                        <div class="bubble bubble-agent">
+                            <div class="bubble-label">Agent</div>
+                            <div class="bubble-text">@message.Text</div>
+
+                            @if (!string.IsNullOrEmpty(message.ToolCallDetails))
+                            {
+                                <details class="tool-details">
+                                    <summary>how it got there</summary>
+                                    <pre>@message.ToolCallDetails</pre>
+                                </details>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+
+    <div class="chat-footer">
+        <form asp-action="Send" method="post" class="chat-form">
+            <input type="text"
+                   name="message"
+                   id="chatInput"
+                   class="chat-input"
+                   placeholder="Ask about a book, active loan, author, or category..."
+                   autocomplete="off"
+                   required />
+            <button type="submit" class="btn btn-oak">Send</button>
+        </form>
+
+        <form asp-action="Reset" method="post" class="chat-reset-form">
+            <button type="submit" class="chat-clear-btn">Clear the conversation</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .chat-panel {
+        display: flex;
+        flex-direction: column;
+        max-width: 900px;
+    }
+
+    .chat-alert {
+        background: var(--rose-bg);
+        color: var(--rose);
+        border: 1px solid var(--rose);
+        border-radius: var(--radius);
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        font-size: 14px;
+    }
+
+    .chat-window {
+        height: 520px;
+        overflow-y: auto;
+        padding: 24px;
+        background: var(--paper);
+    }
+
+    .chat-empty {
+        text-align: center;
+        color: var(--ink-soft);
+        margin-top: 60px;
+    }
+
+    .chat-empty-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+    }
+
+    .chat-suggestions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .chip {
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        font-style: italic;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--oak-dark);
+        border-radius: 99px;
+        padding: 7px 16px;
+        cursor: pointer;
+        transition: background 0.15s ease;
+    }
+
+        .chip:hover {
+            background: var(--paper-deep);
+        }
+
+    .chat-row {
+        display: flex;
+        margin-bottom: 14px;
+    }
+
+    .chat-row-user {
+        justify-content: flex-end;
+    }
+
+    .chat-row-agent {
+        justify-content: flex-start;
+    }
+
+    .bubble {
+        max-width: 75%;
+        border-radius: var(--radius);
+        padding: 12px 16px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .bubble-user {
+        background: var(--oak);
+        color: #fff;
+        border-bottom-right-radius: 2px;
+    }
+
+    .bubble-agent {
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--ink);
+        border-bottom-left-radius: 2px;
+        max-width: 85%;
+    }
+
+    .bubble-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--oak-dark);
+        margin-bottom: 4px;
+    }
+
+    .tool-details {
+        margin-top: 10px;
+        font-size: 12.5px;
+    }
+
+        .tool-details summary {
+            cursor: pointer;
+            color: var(--ink-soft);
+            text-decoration: underline;
+        }
+
+        .tool-details pre {
+            margin-top: 8px;
+            background: var(--paper-deep);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: monospace;
+            color: var(--ink);
+        }
+
+    .chat-footer {
+        border-top: 1px solid var(--border);
+        background: var(--card);
+        padding: 16px 24px;
+    }
+
+    .chat-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .chat-input {
+        flex: 1;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--paper);
+        color: var(--ink);
+    }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--oak);
+        }
+
+    .chat-reset-form {
+        margin-top: 10px;
+        text-align: right;
+    }
+
+    .chat-clear-btn {
+        background: none;
+        border: none;
+        color: var(--ink-soft);
+        font-size: 13px;
+        cursor: pointer;
+        text-decoration: underline;
+        padding: 0;
+    }
+
+        .chat-clear-btn:hover {
+            color: var(--oak-dark);
+        }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var chatWindow = document.getElementById("chatWindow");
+        if (chatWindow) {
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        document.querySelectorAll(".chip").forEach(function (chip) {
+            chip.addEventListener("click", function () {
+                var input = document.getElementById("chatInput");
+                input.value = chip.getAttribute("data-text");
+                input.focus();
+            });
+        });
+    });
+</script>

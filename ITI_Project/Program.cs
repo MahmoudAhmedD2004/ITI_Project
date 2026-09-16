@@ -1,4 +1,5 @@
 using ITI_Project.Data;
+using ITI_Project.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +25,7 @@ namespace ITI_Project
             });
 
             builder.Services.AddAuthorization();
+            builder.Services.AddScoped<IAiService, AiService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

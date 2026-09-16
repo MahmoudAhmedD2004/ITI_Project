@@ -1,6 +1,7 @@
 ﻿using ITI_Project.Data;
 using ITI_Project.Model;
 using ITI_Project.ModelView;
+using ITI_Project.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ITI_Project.Controllers
 {
-    public class BookController(IWebHostEnvironment ev, AppDbContext context) : Controller
+    public class BookController(IWebHostEnvironment ev, AppDbContext context,IAiService _aiService) : Controller
     {
         public async Task<IActionResult> Index()
         {
@@ -266,6 +267,26 @@ namespace ITI_Project.Controllers
             context.Books.Update(book);
             await context.SaveChangesAsync();
             return RedirectToAction("Index", "Book");
+        }
+        [HttpPost]
+        public async Task<IActionResult> AutoSummary([FromBody] AutoSummaryRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request?.BackCoverText))
+            {
+                return BadRequest(new { message = "Back cover text is required." });
+            }
+
+            try
+            {
+                var categoryNames = await context.Categories.Select(c => c.Name).ToListAsync();
+
+                var result = await _aiService.GenerateBookSummaryAsync(request.BackCoverText, categoryNames);
+                return Json(new { success = true, data = result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
     }
 }

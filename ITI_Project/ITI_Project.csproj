@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <UseAppHost>false</UseAppHost>
+    <UserSecretsId>ab7e9e59-0e1b-4857-9d1a-6b73a56151a8</UserSecretsId>
   </PropertyGroup>
 
   
@@ -20,6 +21,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.AI" Version="10.10.0" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.10.0" />
   </ItemGroup>
 
   

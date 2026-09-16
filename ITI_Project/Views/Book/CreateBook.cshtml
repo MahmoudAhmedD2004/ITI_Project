@@ -1,5 +1,24 @@
 ﻿@model BookViewModel
 <div class="container">
+	<!-- AI Auto Summary -->
+	<div class="ai-summary-box">
+		<label for="backCoverText" class="ai-label">Back Cover Text</label>
+		<textarea id="backCoverText" class="ai-textarea" rows="4"
+				  placeholder="Paste the text from the book's back cover here..."></textarea>
+
+		<button type="button" id="generateSummaryBtn" class="ai-btn">
+			<span id="btnText">Generate Auto Summary</span>
+			<span id="btnSpinner" class="ai-spinner d-none"></span>
+		</button>
+
+		<div id="aiErrorMsg" class="ai-error d-none"></div>
+
+		
+		<div id="aiSuggestionBox" class="ai-suggestion d-none">
+			<p><strong>Suggested Category:</strong> <span id="aiSuggestedCategory"></span></p>
+			<p><strong>Suggested Tags:</strong> <span id="aiSuggestedTags"></span></p>
+		</div>
+	</div>
 	<form asp-action="Create" asp-controller="Book" method="post" enctype="multipart/form-data"
 		  onsubmit="return confirm('Are you sure to add this Book?');">
 		<div class="input-group">
@@ -16,7 +35,7 @@
 
 		<div class="input-group">
 			<label asp-for="@Model.Create.Summary">Summary:</label>
-			<textarea asp-for="@Model.Create.Summary"></textarea>
+			<textarea asp-for="@Model.Create.Summary" id="Create_Summary"></textarea>
 			<span asp-validation-for="@Model.Create.Summary" class="text-danger"></span>
 
 		</div>
@@ -61,7 +80,7 @@
 
 		<div class="input-group">
 			<label asp-for="@Model.Create.CategoryId">Category ID:</label>
-			<select asp-for="@Model.Create.CategoryId">
+			<select asp-for="@Model.Create.CategoryId" id="Create_CategoryId">
 				<option>-- select --</option>
 				@foreach (var a in Model.Categories)
 				{
@@ -75,4 +94,4 @@
 			<button type="submit">Create Book</button>
 		</div>
 	</form>
-</div> 
+</div>

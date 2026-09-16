@@ -259,6 +259,24 @@
     border-radius: 7px;
 }
 
+.view-member-btn {
+    display: inline-block;
+    background: rgb(162, 112, 63);
+    padding: 10px 16px;
+    color: white;
+    font-weight: bold;
+    border-radius: 7px;
+    text-align: center;
+}
+
+.member-details-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
 .edit-and-delete {
     display: flex;
     justify-content: space-between;

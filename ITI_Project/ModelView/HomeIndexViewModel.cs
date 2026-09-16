@@ -7,5 +7,6 @@ namespace ITI_Project.ModelView
         public List<Book> NewArrivals { get; set; } = new();
         public List<Book> MostLoans { get; set; } = new();
         public List<Category> Categories { get; set; } = new();
+        public List<Book> Favorites { get; set; } = new();
     }
 }

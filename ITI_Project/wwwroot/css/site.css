@@ -541,6 +541,62 @@ main {
     margin-top: 4px;
 }
 
+.btn-favorite {
+    background: transparent;
+    color: var(--oak-dark);
+    border: 1px solid var(--oak);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+ 
+    .btn-favorite:hover {
+        background: var(--paper-deep);
+    }
+ 
+.btn-favorite-active {
+    background: var(--oak);
+    color: #fff;
+}
+ 
+    .btn-favorite-active:hover {
+        background: var(--oak-dark);
+    }
+ 
+/* ---------- My favorites ---------- */
+.my-favorites {
+    padding: 10px 42px 40px;
+}
+ 
+.favorite-remove {
+    display: inline-block;
+    margin-top: 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+ 
+    .favorite-remove:hover {
+        background: #fbeaea;
+        border-color: #d98c8c;
+        color: #b23b3b;
+    }
+ 
+.empty-state {
+    padding: 30px 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+}
+ 
 /* ---------- Categories ---------- */
 .categories {
     padding: 10px 42px 50px;

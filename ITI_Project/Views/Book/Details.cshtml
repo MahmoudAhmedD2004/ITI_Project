@@ -36,6 +36,20 @@
                         <button type="submit" class="btn btn-oak">Reserve this Book</button>
                     </form>
                 }
+
+                <form asp-action="Toggle" asp-controller="Favorites" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Book", new { id = Model.Id })" />
+                    @if ((bool)ViewBag.IsFavorite)
+                    {
+                        <button type="submit" class="btn btn-favorite btn-favorite-active">★ Remove from Favorites</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-favorite">☆ Add to Favorites</button>
+                    }
+                </form>
             }
             @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
             {

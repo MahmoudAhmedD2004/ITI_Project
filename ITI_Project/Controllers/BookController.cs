@@ -10,24 +10,37 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ITI_Project.Controllers
 {
-    public class BookController(IWebHostEnvironment ev, AppDbContext context,IAiService _aiService) : Controller
+    public class BookController(IWebHostEnvironment ev, AppDbContext context, IAiService _aiService) : Controller
     {
         public async Task<IActionResult> Index()
         {
             var books = await context.Books.Include(b => b.Author)
-                .OrderByDescending(b=>b.PublishedYear).Take(5)
+                .OrderByDescending(b => b.PublishedYear).Take(5)
                 .ToListAsync();
-            
-            var mostLoans = await context.Books.Include(b=>b.Author).Include(b => b.BookCopies).ThenInclude(bc => bc.Loans)
+
+            var mostLoans = await context.Books.Include(b => b.Author).Include(b => b.BookCopies).ThenInclude(bc => bc.Loans)
                 .OrderByDescending(b => b.BookCopies.Sum(bc => bc.Loans.Count)).Take(4).ToListAsync();
 
             var categories = await context.Categories.Include(c => c.Books).ToListAsync();
+
+            var favorites = new List<Book>();
+            if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Member"))
+            {
+                favorites = await context.Favorites
+                    .Include(f => f.Book).ThenInclude(b => b!.Author)
+                    .Where(f => f.Member!.UserName == User.Identity.Name)
+                    .OrderByDescending(f => f.AddedDate)
+                    .Take(4)
+                    .Select(f => f.Book!)
+                    .ToListAsync();
+            }
 
             var model = new HomeIndexViewModel
             {
                 NewArrivals = books,
                 MostLoans = mostLoans,
-                Categories = categories
+                Categories = categories,
+                Favorites = favorites
 
             };
 
@@ -44,7 +57,7 @@ namespace ITI_Project.Controllers
                 Where(b => b.Author.Name.Contains(query) ||
                 b.Title.Contains(query) || b.ISBN.Contains(query)).ToListAsync();
 
-            return  View(books);
+            return View(books);
         }
         [HttpGet]
         public async Task<IActionResult> BookView(BookViewModel model)
@@ -111,8 +124,12 @@ namespace ITI_Project.Controllers
         {
             var book = await context.Books.Include(b => b.Author).Include(b => b.Category)
                         .Include(b => b.BookCopies).ThenInclude(bc => bc.Loans).
-                        Include(b=>b.Reviews).ThenInclude(r=>r.Member).
+                        Include(b => b.Reviews).ThenInclude(r => r.Member).
                         FirstAsync(b => b.Id == id);
+
+            ViewBag.IsFavorite = User.Identity != null && User.Identity.IsAuthenticated
+                && await context.Favorites.AnyAsync(f => f.BookId == id && f.Member!.UserName == User.Identity.Name);
+
             return View(book);
         }
         [HttpGet]
@@ -121,7 +138,7 @@ namespace ITI_Project.Controllers
         {
             model.Authors = await context.Authors.ToListAsync();
             model.Categories = await context.Categories.ToListAsync();
-            
+
             return View(model);
         }
 
@@ -160,21 +177,21 @@ namespace ITI_Project.Controllers
 
 
             var newBook = new Book
-                {
-                    Title = model.Title,
-                    ISBN = model.ISBN,
-                    Summary = model.Summary,
-                    BookLanguage = model.BookLanguage,
-                    PublishedYear = model.PublishedYear,
-                    CoverImage = path,
-                    AuthorId = model.AuthorId,
-                    CategoryId = model.CategoryId
-                };
-                await context.Books.AddAsync(newBook);
-                await context.SaveChangesAsync();
-                return RedirectToAction("Index");
-            
-            
+            {
+                Title = model.Title,
+                ISBN = model.ISBN,
+                Summary = model.Summary,
+                BookLanguage = model.BookLanguage,
+                PublishedYear = model.PublishedYear,
+                CoverImage = path,
+                AuthorId = model.AuthorId,
+                CategoryId = model.CategoryId
+            };
+            await context.Books.AddAsync(newBook);
+            await context.SaveChangesAsync();
+            return RedirectToAction("Index");
+
+
         }
         public async Task<IActionResult> Report(ReportViewModel model)
         {

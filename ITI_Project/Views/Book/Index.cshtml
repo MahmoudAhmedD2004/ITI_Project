@@ -67,6 +67,35 @@
     </div>
 </section>
 
+@if (User.Identity?.IsAuthenticated == true && User.IsInRole("Member") && Model.Favorites.Any())
+{
+    <section class="my-favorites">
+        <div class="section-head">
+            <h2>My favorites</h2>
+            <a asp-action="Index" asp-controller="Favorites" class="view-all">View all &rarr;</a>
+        </div>
+
+        <div class="book-grid book-grid-4">
+            @foreach (var book in Model.Favorites)
+            {
+                <a href="@Url.Action("Details", "Book", new { id = book.Id })" class="book-card">
+                    <div class="book-cover"
+                         style="@(string.IsNullOrEmpty(book.CoverImage)
+                                                 ? $"background: linear-gradient(160deg, {book.CoverColorStart}, {book.CoverColorEnd});"
+                                                 : $"background-image: url('{book.CoverImage}'); background-size: cover; background-position: center;")">
+                        @if (string.IsNullOrEmpty(book.CoverImage))
+                        {
+                            <span>@book.Initials</span>
+                        }
+                    </div>
+                    <h3>@book.Title</h3>
+                    <p>@book.Author.Name</p>
+                </a>
+            }
+        </div>
+    </section>
+}
+
 <section class="categories">
     <div class="section-head">
         <h2>Browse by category</h2>

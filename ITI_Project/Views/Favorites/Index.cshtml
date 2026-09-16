@@ -1,0 +1,47 @@
+﻿@model List<ITI_Project.Model.Favorite>
+<section class="page" id="page-favorites">
+    <div class="section-head">
+        <h2>My Favorites</h2>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            You haven't added any books to your favorites yet. Browse the
+            <a asp-action="BookView" asp-controller="Book">catalogue</a> and tap "Add to Favorites" on any book.
+        </div>
+    }
+    else
+    {
+        <div class="book-grid book-grid-4">
+            @foreach (var favorite in Model)
+            {
+                var book = favorite.Book!;
+                <div class="book-card">
+                    <a href="@Url.Action("Details", "Book", new { id = book.Id })">
+                        <div class="book-cover"
+                             style="@(string.IsNullOrEmpty(book.CoverImage)
+                                                     ? $"background: linear-gradient(160deg, {book.CoverColorStart}, {book.CoverColorEnd});"
+                                                     : $"background-image: url('{book.CoverImage}'); background-size: cover; background-position: center;")">
+                            @if (string.IsNullOrEmpty(book.CoverImage))
+                            {
+                                <span>@book.Initials</span>
+                            }
+                        </div>
+                        <h3>@book.Title</h3>
+                        <p>@book.Author?.Name</p>
+                    </a>
+
+                    <form asp-action="Toggle" asp-controller="Favorites" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="bookId" value="@book.Id" />
+                        <button type="submit" class="favorite-remove"
+                                onclick="return confirm('Remove this book from your favorites?');">
+                            Remove from Favorites
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</section>

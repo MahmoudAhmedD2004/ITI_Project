@@ -1,10 +1,12 @@
-﻿namespace ITI_Project.ModelView
+﻿using ITI_Project.Model;
+namespace ITI_Project.ModelView
 {
     public class MemberViewModel
     {
         public int Id { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
+        public Role Role { get; set; }
         public DateTime MembershipStartDate { get; set; }
         public DateTime MembershipExpiryDate { get; set; }
         public bool IsBlocked { get; set; }

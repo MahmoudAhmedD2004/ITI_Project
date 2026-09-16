@@ -1,0 +1,46 @@
+﻿@model ITI_Project.ModelView.AdminEditMemberViewModel
+
+<div class="page-head">
+    <div>
+        <h1>Edit User</h1>
+        <p>Update this user's data, role, or password</p>
+    </div>
+</div>
+
+<div class="panel" style="padding:24px; max-width:480px;">
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="All" class="text-danger" style="margin-bottom:16px;"></div>
+
+        <div class="field">
+            <label>Username</label>
+            <input asp-for="UserName" type="text" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+        <div class="field">
+            <label>Email</label>
+            <input asp-for="Email" type="email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="field">
+            <label>Phone number</label>
+            <input asp-for="PhoneNumber" type="tel" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+        <div class="field">
+            <label>Role</label>
+            <select asp-for="Role" asp-items="Html.GetEnumSelectList<ITI_Project.Model.Role>()"></select>
+            <span asp-validation-for="Role" class="text-danger"></span>
+        </div>
+        <div class="field">
+            <label>New password</label>
+            <input asp-for="NewPassword" type="password" placeholder="Leave blank to keep the current password" />
+            <span asp-validation-for="NewPassword" class="text-danger"></span>
+        </div>
+
+        <div style="margin-top:20px; display:flex; gap:10px;">
+            <button type="submit" class="btn btn-oak">Save changes</button>
+            <a asp-action="Index" class="btn btn-ghost">Cancel</a>
+        </div>
+    </form>
+</div>

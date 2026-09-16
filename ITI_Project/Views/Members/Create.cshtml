@@ -1,0 +1,45 @@
+﻿@model ITI_Project.ModelView.AdminCreateMemberViewModel
+
+<div class="page-head">
+    <div>
+        <h1>Add New User</h1>
+        <p>Create an account and assign its role</p>
+    </div>
+</div>
+
+<div class="panel" style="padding:24px; max-width:480px;">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="text-danger" style="margin-bottom:16px;"></div>
+
+        <div class="field">
+            <label>Username</label>
+            <input asp-for="UserName" type="text" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+        <div class="field">
+            <label>Email</label>
+            <input asp-for="Email" type="email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="field">
+            <label>Phone number</label>
+            <input asp-for="PhoneNumber" type="tel" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+        <div class="field">
+            <label>Password</label>
+            <input asp-for="Password" type="password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="field">
+            <label>Role</label>
+            <select asp-for="Role" asp-items="Html.GetEnumSelectList<ITI_Project.Model.Role>()"></select>
+            <span asp-validation-for="Role" class="text-danger"></span>
+        </div>
+
+        <div style="margin-top:20px; display:flex; gap:10px;">
+            <button type="submit" class="btn btn-oak">Create user</button>
+            <a asp-action="Index" class="btn btn-ghost">Cancel</a>
+        </div>
+    </form>
+</div>

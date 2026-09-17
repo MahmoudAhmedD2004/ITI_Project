@@ -14,18 +14,20 @@
         <div class="auth-right">
             <div class="auth-card">
                 <div class="auth-tabs">
-                    <button class="auth-tab active" onclick="showAuthForm('login')">Sign in</button>
-                    <button class="auth-tab" onclick="showAuthForm('signup')">Sign up</button>
+                    <button class="auth-tab @(ViewData["ActiveForm"] as string == "signup" ? "" : "active")" onclick="showAuthForm('login')">Sign in</button>
+                    <button class="auth-tab @(ViewData["ActiveForm"] as string == "signup" ? "active" : "")" onclick="showAuthForm('signup')">Sign up</button>
                 </div>
 
-                <form asp-action="login" asp-controller="Member" method="post" class="auth-form active" id="form-login" >
+                <form asp-action="login" asp-controller="Member" method="post" class="auth-form @(ViewData["ActiveForm"] as string == "signup" ? "" : "active")" id="form-login" >
+                    <div asp-validation-summary="All" class="text-danger" style="margin-bottom:12px;"></div>
                     <div class="field"><label>User Name</label><input type="text" name="username" placeholder="mahmoud12" /></div>
                     <div class="field"><label>Password</label><input type="password" name="password" placeholder="••••••••" /></div>
                     <button class="btn btn-oak auth-submit" type="submit">Sign in</button>
                     <div class="auth-foot">New here? <a onclick="showAuthForm('signup')">Create an account</a></div>
                 </form>
 
-                <form asp-action="Signup" asp-controller="Member" method="post" class="auth-form" id="form-signup">
+                <form asp-action="Signup" asp-controller="Member" method="post" class="auth-form @(ViewData["ActiveForm"] as string == "signup" ? "active" : "")" id="form-signup">
+                    <div asp-validation-summary="All" class="text-danger" style="margin-bottom:12px;"></div>
                     <div class="field"><label>Username</label><input name="username" type="text" placeholder="yourname" /></div>
                     <div class="field"><label >Email</label><input name="email" type="email" placeholder="you@mail.com" /></div>
                     <div class="field"><label>Phone number</label><input name="phone" type="tel" placeholder="01xxxxxxxxx" /></div>

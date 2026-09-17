@@ -162,6 +162,7 @@ namespace ITI_Project.Controllers
 
             if (!ModelState.IsValid)
             {
+                ViewData["ActiveForm"] = "signup";
                 return View("Index");
             }
 

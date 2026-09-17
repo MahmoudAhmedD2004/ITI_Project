@@ -1,0 +1,41 @@
+﻿@model ITI_Project.Model.Ebook
+@{
+    var book = (ITI_Project.Model.Book)ViewBag.Book;
+}
+<section class="page" id="page-ebook-read">
+    <button type="button" class="back-link"
+            onclick="location.href='@Url.Action("Details", "Book", new { id = book.Id })'">
+        ← Back to book
+    </button>
+
+    <div class="details-wrap">
+        <div class="details-cover">
+            <div class="book-cover cover-lg"
+                 style="@(string.IsNullOrEmpty(book.CoverImage)
+                                         ? $"background: linear-gradient(160deg, {book.CoverColorStart}, {book.CoverColorEnd});"
+                                         : $"background-image: url('{book.CoverImage}'); background-size: cover; background-position: center;")">
+                @if (string.IsNullOrEmpty(book.CoverImage))
+                {
+                    <span>@book.Initials</span>
+                }
+            </div>
+        </div>
+
+        <div>
+            <h2>@book.Title</h2>
+            <p>@book.Author?.Name</p>
+
+            @if (Model != null)
+            {
+                <div class="ebook-actions">
+                    <a href="@Model.FilePath" target="_blank" class="btn btn-oak">Read Online</a>
+                    <a href="@Model.FilePath" download class="btn btn-ghost">Download PDF</a>
+                </div>
+            }
+            else
+            {
+                <p>No ebook has been uploaded for this book yet.</p>
+            }
+        </div>
+    </div>
+</section>

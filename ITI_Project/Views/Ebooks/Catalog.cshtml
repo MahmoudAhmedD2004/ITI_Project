@@ -1,0 +1,35 @@
+﻿@model List<ITI_Project.Model.Book>
+<div class="page-head">
+    <div>
+        <h1>Ebooks</h1>
+        <p>Browse the titles that are available as an electronic (PDF) copy.</p>
+    </div>
+</div>
+
+<section class="new-arrivals">
+    @if (!Model.Any())
+    {
+        <p>No ebooks are available yet.</p>
+    }
+    else
+    {
+        <div class="book-grid">
+            @foreach (var book in Model)
+            {
+                <a href="@Url.Action("Details", "Book", new { id = book.Id })" class="book-card">
+                    <div class="book-cover"
+                         style="@(string.IsNullOrEmpty(book.CoverImage)
+                                                                     ? $"background: linear-gradient(160deg, {book.CoverColorStart}, {book.CoverColorEnd});"
+                                                                     : $"background-image: url('{book.CoverImage}'); background-size: cover; background-position: center;")">
+                        @if (string.IsNullOrEmpty(book.CoverImage))
+                        {
+                            <span>@book.Initials</span>
+                        }
+                    </div>
+                    <h3>@book.Title</h3>
+                    <p>@book.Author?.Name</p>
+                </a>
+            }
+        </div>
+    }
+</section>

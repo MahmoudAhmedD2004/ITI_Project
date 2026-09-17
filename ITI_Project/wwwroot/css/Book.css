@@ -101,6 +101,16 @@
     width: 100%;
 }
 
+.ebook-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+    .ebook-actions .btn {
+        text-align: center;
+    }
+
 .details-copies {
     text-align: center;
     font-size: 12.5px;

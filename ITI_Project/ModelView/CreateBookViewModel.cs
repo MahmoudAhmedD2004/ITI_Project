@@ -21,6 +21,10 @@ namespace ITI_Project.ModelView
 
         public IFormFile? CoverImageFile { get; set; }
         // public string CoverImage { get; set; } = "";
+
+        // Optional: upload the PDF ebook version of the book at creation time.
+        public IFormFile? EbookFile { get; set; }
+
         [Required]
         public int AuthorId { get; set; }
         [Required]

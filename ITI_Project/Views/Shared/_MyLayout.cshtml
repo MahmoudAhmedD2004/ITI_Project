@@ -42,6 +42,20 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.6 12.6 12.6 20.6a2 2 0 0 1-2.8 0L2 12.8V3h9.8l8.8 8.8a2 2 0 0 1 0 2.8Z"/><circle cx="7" cy="7.5" r="1.2" fill="currentColor" stroke="none"/></svg>
         Categories
       </a>
+      @if (User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Librarian")))
+      {
+          <a class="nav-item" data-page="ebooks" asp-controller="Ebooks" asp-action="Index">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+              Ebooks
+          </a>
+      }
+      @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Member"))
+      {
+          <a class="nav-item" data-page="ebooks" asp-controller="Ebooks" asp-action="Catalog">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+              Ebooks
+          </a>
+      }
             @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
                 {
                     <div class="nav-label">People</div>

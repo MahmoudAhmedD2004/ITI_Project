@@ -1,0 +1,64 @@
+﻿@model List<ITI_Project.Model.Book>
+@{
+    var ebooks = (Dictionary<int, ITI_Project.Model.Ebook>)ViewBag.Ebooks;
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+    <div class="d-block mb-4 mb-md-0">
+        <h2 class="h4">Ebooks</h2>
+        <p class="mb-0">Upload, replace or remove the PDF attached to each book.</p>
+    </div>
+</div>
+
+@if (TempData["EbookError"] != null)
+{
+    <div class="text-danger" style="margin-bottom:16px;">@TempData["EbookError"]</div>
+}
+
+<div class="card card-body border-0 shadow table-wrapper table-responsive">
+    <table class="table table-hover align-items-center">
+        <thead>
+            <tr>
+                <th class="border-gray-200">Title</th>
+                <th class="border-gray-200">Author</th>
+                <th class="border-gray-200">Ebook</th>
+                <th class="border-gray-200">Upload / Replace</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model)
+            {
+                var hasEbook = ebooks.ContainsKey(book.Id);
+                <tr>
+                    <td><span class="fw-normal">@book.Title</span></td>
+                    <td><span class="fw-normal">@book.Author?.Name</span></td>
+                    <td>
+                        @if (hasEbook)
+                        {
+                            var ebook = ebooks[book.Id];
+                            <a href="@ebook.FilePath" target="_blank">@ebook.OriginalFileName</a>
+                            <form asp-action="Remove" asp-controller="Ebooks" method="post" style="display:inline;"
+                                  onsubmit="return confirm('Remove this ebook file?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="bookId" value="@book.Id" />
+                                <button type="submit" class="btn btn-link text-danger m-0 p-0" style="margin-left:8px;">Remove</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">No ebook</span>
+                        }
+                    </td>
+                    <td>
+                        <form asp-action="Upload" asp-controller="Ebooks" method="post" enctype="multipart/form-data" style="display:flex; gap:8px;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="bookId" value="@book.Id" />
+                            <input type="file" name="file" accept="application/pdf" />
+                            <button type="submit" class="btn btn-oak btn-sm">@(hasEbook ? "Replace" : "Upload")</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

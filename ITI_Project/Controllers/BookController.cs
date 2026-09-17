@@ -130,6 +130,8 @@ namespace ITI_Project.Controllers
             ViewBag.IsFavorite = User.Identity != null && User.Identity.IsAuthenticated
                 && await context.Favorites.AnyAsync(f => f.BookId == id && f.Member!.UserName == User.Identity.Name);
 
+            ViewBag.HasEbook = await context.Ebooks.AnyAsync(e => e.BookId == id);
+
             return View(book);
         }
         [HttpGet]
@@ -189,6 +191,39 @@ namespace ITI_Project.Controllers
             };
             await context.Books.AddAsync(newBook);
             await context.SaveChangesAsync();
+
+            if (model.EbookFile != null && model.EbookFile.Length > 0)
+            {
+                if (string.Equals(Path.GetExtension(model.EbookFile.FileName), ".pdf", StringComparison.OrdinalIgnoreCase))
+                {
+                    var ebookFileName = $"{Guid.NewGuid()}.pdf";
+                    var ebookFolderPath = Path.Combine(ev.WebRootPath, "files", "ebooks");
+
+                    if (!Directory.Exists(ebookFolderPath))
+                        Directory.CreateDirectory(ebookFolderPath);
+
+                    var ebookFilePath = Path.Combine(ebookFolderPath, ebookFileName);
+
+                    using (var stream = new FileStream(ebookFilePath, FileMode.Create))
+                    {
+                        await model.EbookFile.CopyToAsync(stream);
+                    }
+
+                    context.Ebooks.Add(new Ebook
+                    {
+                        BookId = newBook.Id,
+                        FilePath = $"/files/ebooks/{ebookFileName}",
+                        OriginalFileName = model.EbookFile.FileName,
+                        UploadedDate = DateTime.Now
+                    });
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
+                    TempData["EbookError"] = "The ebook file must be a PDF. The book was created without an ebook version.";
+                }
+            }
+
             return RedirectToAction("Index");
 
 

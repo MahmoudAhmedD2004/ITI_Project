@@ -50,6 +50,13 @@
                         <button type="submit" class="btn btn-favorite">☆ Add to Favorites</button>
                     }
                 </form>
+
+                @if ((bool)ViewBag.HasEbook)
+                {
+                    <a href="@Url.Action("Read", "Ebooks", new { bookId = Model.Id })" class="btn btn-ghost details-borrow">
+                        📖 Read / Download Ebook
+                    </a>
+                }
             }
             @if (@User.IsInRole("Librarian") || @User.IsInRole("Admin"))
             {

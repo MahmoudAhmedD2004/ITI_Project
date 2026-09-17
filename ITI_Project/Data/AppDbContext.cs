@@ -301,5 +301,6 @@ namespace ITI_Project.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
+        public DbSet<Ebook> Ebooks { get; set; }
     }
 }

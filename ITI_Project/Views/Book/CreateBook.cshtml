@@ -66,6 +66,12 @@
 		</div>
 
 		<div class="input-group">
+			<label asp-for="@Model.Create.EbookFile">Ebook (PDF) - optional:</label>
+			<input type="file" accept="application/pdf" asp-for="@Model.Create.EbookFile" />
+			<span asp-validation-for="@Model.Create.EbookFile" class="text-danger"></span>
+		</div>
+
+		<div class="input-group">
 			<label asp-for="@Model.Create.AuthorId">Author ID:</label>
 			<select asp-for="@Model.Create.AuthorId">
 				<option>-- select --</option>
